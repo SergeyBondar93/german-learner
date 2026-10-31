@@ -75,9 +75,10 @@
     .words { display: flex; flex-wrap: wrap; gap: 8px; }
     .answer-area .words { display: block; width: 100%; line-height: 1.9; }
     .word { min-height: 42px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 24px; background: #f5f7fb; font-size: 14px; font-weight: 650; cursor: pointer; touch-action: manipulation; }
-    .speech-controls { display: grid; gap: 7px; margin: 0 0 12px; }
+    .speech-controls { display: grid; grid-template-columns: 80% minmax(0, 1fr); gap: 7px 8px; margin: 0 0 12px; }
     .speech-button { width: 100%; }
-    .speech-status { min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .play-answer-button { width: 100%; padding: 0 8px; font-size: 20px; }
+    .speech-status { grid-column: 1 / -1; min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
     .word.selected { border-color: #b8c6ff; background: var(--accent-light); color: var(--accent); font-weight: 750; }
     .word:disabled { opacity: .35; cursor: default; transform: none; }
     .answer-word { display: inline; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--accent); font-size: 16px; font-weight: 650; line-height: inherit; cursor: pointer; touch-action: manipulation; }
@@ -120,11 +121,14 @@
       selected: [],
       feedback: null,
       exerciseSets: Object.create(null),
+      hasAttempted: false,
       speechStatus: SpeechRecognition
         ? 'Нажми и произнеси предложение по-немецки. Распознавание зависит от браузера и может использовать интернет.'
         : 'Голосовой ввод не поддерживается этим браузером. Можно выбрать слова вручную.',
       speechListening: false,
     };
+    const canSynthesizeSpeech = 'speechSynthesis' in window
+      && typeof window.SpeechSynthesisUtterance === 'function';
     let activeRecognition = null;
     const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -154,6 +158,17 @@
       if (!activeRecognition) return;
       state.speechListening = false;
       activeRecognition.stop();
+    };
+    const playCorrectAnswer = () => {
+      const route = currentRoute();
+      if (!canSynthesizeSpeech || !state.hasAttempted || !route) return;
+      const utterance = new window.SpeechSynthesisUtterance(route.topic.exercises[route.index].answer);
+      utterance.lang = 'de-DE';
+      const germanVoice = window.speechSynthesis.getVoices()
+        .find((voice) => voice.lang.toLocaleLowerCase().startsWith('de'));
+      if (germanVoice) utterance.voice = germanVoice;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
     };
     const startSpeechRecognition = () => {
       if (!SpeechRecognition) return;
@@ -302,7 +317,7 @@
         const selected = state.selected.includes(optionIndex);
         return '<button class="word" type="button" data-action="add" data-index="' + optionIndex + '" aria-label="Добавить слово ' + escapeHtml(word) + '"' + (selected || state.feedback ? ' disabled' : '') + '>' + escapeHtml(word) + '</button>';
       }).join('');
-      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p></div>';
+      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p></div>';
       let feedback = '';
       if (state.feedback) {
         const isCorrect = state.feedback === 'correct';
@@ -341,6 +356,7 @@
         stopSpeechRecognition();
         state.selected = [];
         state.feedback = null;
+        state.hasAttempted = false;
         state.exerciseId = route.topic.exercises[route.index].id;
         state.speechStatus = SpeechRecognition
           ? 'Нажми и произнеси предложение по-немецки. Распознавание зависит от браузера и может использовать интернет.'
@@ -380,6 +396,9 @@
             startSpeechRecognition();
           }
           break;
+        case 'play-answer':
+          playCorrectAnswer();
+          break;
         case 'add':
           state.selected.push(Number(button.dataset.index));
           state.feedback = null;
@@ -404,6 +423,7 @@
           }
           const exercise = route.topic.exercises[route.index];
           const words = state.selected.map((index) => exercise.options[index]);
+          state.hasAttempted = true;
           state.feedback = answersMatch(words, exercise.answer) ? 'correct' : 'incorrect';
           render();
           break;
