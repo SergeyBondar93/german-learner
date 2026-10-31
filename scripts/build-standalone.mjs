@@ -31,6 +31,7 @@ function loadTypeScriptModule(filePath, imports = {}) {
 }
 
 const trainer = loadTypeScriptModule(path.join(root, 'src', 'trainer.ts'));
+const speechMatching = loadTypeScriptModule(path.join(root, 'src', 'speechMatching.ts'));
 const content = loadTypeScriptModule(
   path.join(root, 'src', 'content.ts'),
   { './trainer': trainer },
@@ -42,6 +43,10 @@ const pronouns = loadTypeScriptModule(
   path.join(root, 'src', 'pronounExercises.ts'),
   { './trainer': trainer },
 );
+const speechMatchingSource = [
+  `const matchSpokenWords = ${speechMatching.matchSpokenWords.toString()};`,
+  `const matchSpeechAlternatives = ${speechMatching.matchSpeechAlternatives.toString()};`,
+].join('\n');
 
 if (content.TOPICS.length !== 18) {
   throw new Error(`Expected 18 topics, found ${content.TOPICS.length}.`);
@@ -462,7 +467,7 @@ const output = `<!doctype html>
       exerciseSets: Object.create(null),
       hasAttempted: false,
       speechStatus: SpeechRecognition
-        ? 'Нажми и произнеси предложение по-немецки. Распознавание зависит от браузера и может использовать интернет.'
+        ? 'Произнеси предложение по-немецки. Для сомнительных слов я попробую подобрать похожие слова из ответа.'
         : 'Голосовой ввод не поддерживается этим браузером. Можно выбрать слова вручную.',
       speechListening: false,
     };
@@ -482,6 +487,7 @@ const output = `<!doctype html>
       return selected.length === expected.length
         && selected.every((word, index) => normalizeWord(word) === expected[index]);
     };
+    ${speechMatchingSource}
     const speechErrorMessage = (error) => {
       const messages = {
         'not-allowed': 'Нет доступа к микрофону. Разреши его в настройках браузера.',
@@ -523,7 +529,7 @@ const output = `<!doctype html>
       recognition.lang = 'de-DE';
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+      recognition.maxAlternatives = 5;
       recognition.onresult = (event) => {
         const current = currentRoute();
         if (
@@ -531,28 +537,19 @@ const output = `<!doctype html>
           current.topic.id !== route.topic.id ||
           current.topic.exercises[current.index].id !== exerciseId
         ) return;
-        const transcript = event.results[0][0].transcript.trim();
-        const spokenWords = tokenize(transcript);
-        const usedOptions = new Set();
-        const selected = [];
-        const unrecognizedWords = [];
         const exercise = current.topic.exercises[current.index];
-        for (const spokenWord of spokenWords) {
-          const optionIndex = exercise.options.findIndex((option, index) =>
-            !usedOptions.has(index) && normalizeWord(option) === normalizeWord(spokenWord),
-          );
-          if (optionIndex === -1) {
-            unrecognizedWords.push(spokenWord);
-          } else {
-            usedOptions.add(optionIndex);
-            selected.push(optionIndex);
-          }
-        }
-        state.selected = selected;
+        const alternatives = Array.from(event.results[0], (alternative) => alternative.transcript.trim())
+          .filter(Boolean);
+        const match = matchSpeechAlternatives(alternatives, exercise.options, exercise.answer);
+        state.selected = match.selected;
         state.speechListening = false;
-        state.speechStatus = unrecognizedWords.length
-          ? 'Распознано: «' + transcript + '». Не найдены в тегах: ' + unrecognizedWords.join(', ') + '. Ответ можно поправить вручную.'
-          : 'Распознано: «' + transcript + '». Слова выбраны — проверь ответ.';
+        const approximateStatus = match.approximate.length
+          ? 'Похожие слова сопоставлены: ' + match.approximate.map(({ spoken, matched }) => '«' + spoken + '» → «' + matched + '»').join(', ') + '. '
+          : '';
+        const unrecognizedStatus = match.unrecognized.length
+          ? 'Не распознаны: ' + match.unrecognized.join(', ') + '. Ответ можно поправить вручную.'
+          : 'Слова выбраны — проверь ответ.';
+        state.speechStatus = 'Распознано: «' + match.transcript + '». ' + approximateStatus + unrecognizedStatus;
         render();
       };
       recognition.onerror = (event) => {
