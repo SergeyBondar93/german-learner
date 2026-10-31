@@ -675,7 +675,7 @@ const output = `<!doctype html>
         const selected = state.selected.includes(optionIndex);
         return '<button class="word" type="button" data-action="add" data-index="' + optionIndex + '" aria-label="Добавить слово ' + escapeHtml(word) + '"' + (selected || state.feedback ? ' disabled' : '') + '>' + escapeHtml(word) + '</button>';
       }).join('');
-      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button></div><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p>';
+      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button></div>' + (state.speechStatus ? '<p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p>' : '');
       let feedback = '';
       if (state.feedback) {
         const isCorrect = state.feedback === 'correct';
