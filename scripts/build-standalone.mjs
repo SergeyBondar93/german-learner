@@ -32,6 +32,7 @@ function loadTypeScriptModule(filePath, imports = {}) {
 
 const trainer = loadTypeScriptModule(path.join(root, 'src', 'trainer.ts'));
 const speechMatching = loadTypeScriptModule(path.join(root, 'src', 'speechMatching.ts'));
+const progress = loadTypeScriptModule(path.join(root, 'src', 'progress.ts'));
 const content = loadTypeScriptModule(
   path.join(root, 'src', 'content.ts'),
   { './trainer': trainer },
@@ -48,6 +49,7 @@ const speechMatchingSource = [
   `const matchSpeechAlternatives = ${speechMatching.matchSpeechAlternatives.toString()};`,
   `const evaluateSpeechText = ${speechMatching.evaluateSpeechText.toString()};`,
 ].join('\n');
+const progressStoreSource = `const createProgressStore = ${progress.createProgressStore.toString()};`;
 
 if (content.TOPICS.length !== 18) {
   throw new Error(`Expected 18 topics, found ${content.TOPICS.length}.`);
@@ -396,6 +398,8 @@ const output = `<!doctype html>
     .topic-meta { padding: 5px 9px; border-radius: 20px; background: #f5f7fb; }
     .topic-title { display: block; margin-bottom: 5px; font-size: 17px; font-weight: 750; line-height: 1.35; }
     .topic-summary { display: block; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .clear-progress { display: flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; margin: 20px 0 0; padding: 10px 16px; border: 1px solid #f1c7c5; border-radius: 12px; background: #fff; color: #b42318; font-size: 14px; font-weight: 750; cursor: pointer; touch-action: manipulation; }
+    .clear-progress:active { transform: scale(.985); }
     .back { min-height: 44px; margin: 8px 0 6px -10px; padding: 0 10px; border: 0; background: transparent; color: var(--accent); font-weight: 750; cursor: pointer; }
     .lesson-heading { padding: 4px 0 16px; }
     .lesson-heading h1 { font-size: clamp(25px, 6vw, 30px); }
@@ -472,6 +476,8 @@ const output = `<!doctype html>
   <script>
     'use strict';
     const TOPICS = JSON.parse(document.getElementById('topic-data').textContent);
+    ${progressStoreSource}
+    const progressStore = createProgressStore(window.localStorage);
     const LEVELS = ['A2', 'B1', 'B2', 'Местоимения'];
     const app = document.getElementById('app');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -651,8 +657,9 @@ const output = `<!doctype html>
         + '<nav class="level-tabs" aria-label="Уровень немецкого">'
         + LEVELS.map((level) => '<button class="tab" type="button" data-action="level" data-level="' + level + '" aria-pressed="' + (state.level === level) + '">' + level + '</button>').join('')
         + '</nav><section aria-label="Темы: ' + escapeHtml(sectionTitle) + '"><div class="level-heading"><h2>' + escapeHtml(sectionTitle) + '</h2><span>' + escapeHtml(sectionSummary) + '</span></div>'
-        + topics.map((topic, index) => '<button class="topic-card" type="button" data-action="open" data-topic="' + escapeHtml(topic.id) + '"><span class="topic-top"><span class="topic-number">' + String(index + 1).padStart(2, '0') + '</span><span class="topic-meta">' + topic.exercises.length + ' заданий</span></span><span class="topic-title">' + escapeHtml(topic.title) + '</span><span class="topic-summary">' + escapeHtml(topic.summary) + '</span></button>').join('')
-        + '</section><footer class="footer">Разбирай грамматику на русском и практикуй немецкий в предложениях из жизни.</footer>';
+        + topics.map((topic, index) => '<button class="topic-card" type="button" data-action="open" data-topic="' + escapeHtml(topic.id) + '"><span class="topic-top"><span class="topic-number">' + String(index + 1).padStart(2, '0') + '</span><span class="topic-meta">Выполнено ' + progressStore.getCompletedCount(topic.id) + ' из ' + topic.exercises.length + '</span></span><span class="topic-title">' + escapeHtml(topic.title) + '</span><span class="topic-summary">' + escapeHtml(topic.summary) + '</span></button>').join('')
+        + '</section><footer class="footer">Разбирай грамматику на русском и практикуй немецкий в предложениях из жизни.</footer>'
+        + '<button class="clear-progress" type="button" data-action="clear-progress">Очистить прогресс</button>';
     }
     function renderLesson(topic, index) {
       const exercise = topic.exercises[index];
@@ -753,6 +760,12 @@ const output = `<!doctype html>
           stopSpeechRecognition();
           goHome();
           break;
+        case 'clear-progress':
+          if (window.confirm('Очистить весь сохранённый прогресс по темам?')) {
+            progressStore.clear();
+            renderHome();
+          }
+          break;
         case 'speak':
           if (state.speechListening) {
             stopSpeechRecognition();
@@ -789,6 +802,7 @@ const output = `<!doctype html>
           }
           const exercise = route.topic.exercises[route.index];
           const words = state.selected.map((index) => exercise.options[index]);
+          progressStore.markCompleted(route.topic.id, exercise.id);
           state.hasAttempted = true;
           state.feedback = answersMatch(words, exercise.answer) ? 'correct' : 'incorrect';
           render();

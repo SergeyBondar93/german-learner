@@ -51,6 +51,8 @@
     .topic-meta { padding: 5px 9px; border-radius: 20px; background: #f5f7fb; }
     .topic-title { display: block; margin-bottom: 5px; font-size: 17px; font-weight: 750; line-height: 1.35; }
     .topic-summary { display: block; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .clear-progress { display: flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; margin: 20px 0 0; padding: 10px 16px; border: 1px solid #f1c7c5; border-radius: 12px; background: #fff; color: #b42318; font-size: 14px; font-weight: 750; cursor: pointer; touch-action: manipulation; }
+    .clear-progress:active { transform: scale(.985); }
     .back { min-height: 44px; margin: 8px 0 6px -10px; padding: 0 10px; border: 0; background: transparent; color: var(--accent); font-weight: 750; cursor: pointer; }
     .lesson-heading { padding: 4px 0 16px; }
     .lesson-heading h1 { font-size: clamp(25px, 6vw, 30px); }
@@ -127,6 +129,39 @@
   <script>
     'use strict';
     const TOPICS = JSON.parse(document.getElementById('topic-data').textContent);
+    const createProgressStore = function createProgressStore(storage) {
+    const storageKey = 'wort-fuer-wort-progress-v1';
+    const isProgressRecord = (value) => typeof value === 'object'
+        && value !== null
+        && !Array.isArray(value)
+        && Object.values(value).every((exerciseIds) => Array.isArray(exerciseIds) && exerciseIds.every((id) => typeof id === 'string'));
+    const read = () => {
+        const stored = storage.getItem(storageKey);
+        if (stored === null)
+            return {};
+        const value = JSON.parse(stored);
+        if (!isProgressRecord(value)) {
+            throw new Error('Сохранённый прогресс повреждён. Очисти прогресс и попробуй снова.');
+        }
+        return value;
+    };
+    return {
+        getCompletedCount(topicId) {
+            return new Set(read()[topicId] || []).size;
+        },
+        markCompleted(topicId, exerciseId) {
+            const progress = read();
+            const completed = new Set(progress[topicId] || []);
+            completed.add(exerciseId);
+            progress[topicId] = [...completed];
+            storage.setItem(storageKey, JSON.stringify(progress));
+        },
+        clear() {
+            storage.removeItem(storageKey);
+        },
+    };
+};
+    const progressStore = createProgressStore(window.localStorage);
     const LEVELS = ['A2', 'B1', 'B2', 'Местоимения'];
     const app = document.getElementById('app');
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -537,8 +572,9 @@ const evaluateSpeechText = function evaluateSpeechText(transcript, answer) {
         + '<nav class="level-tabs" aria-label="Уровень немецкого">'
         + LEVELS.map((level) => '<button class="tab" type="button" data-action="level" data-level="' + level + '" aria-pressed="' + (state.level === level) + '">' + level + '</button>').join('')
         + '</nav><section aria-label="Темы: ' + escapeHtml(sectionTitle) + '"><div class="level-heading"><h2>' + escapeHtml(sectionTitle) + '</h2><span>' + escapeHtml(sectionSummary) + '</span></div>'
-        + topics.map((topic, index) => '<button class="topic-card" type="button" data-action="open" data-topic="' + escapeHtml(topic.id) + '"><span class="topic-top"><span class="topic-number">' + String(index + 1).padStart(2, '0') + '</span><span class="topic-meta">' + topic.exercises.length + ' заданий</span></span><span class="topic-title">' + escapeHtml(topic.title) + '</span><span class="topic-summary">' + escapeHtml(topic.summary) + '</span></button>').join('')
-        + '</section><footer class="footer">Разбирай грамматику на русском и практикуй немецкий в предложениях из жизни.</footer>';
+        + topics.map((topic, index) => '<button class="topic-card" type="button" data-action="open" data-topic="' + escapeHtml(topic.id) + '"><span class="topic-top"><span class="topic-number">' + String(index + 1).padStart(2, '0') + '</span><span class="topic-meta">Выполнено ' + progressStore.getCompletedCount(topic.id) + ' из ' + topic.exercises.length + '</span></span><span class="topic-title">' + escapeHtml(topic.title) + '</span><span class="topic-summary">' + escapeHtml(topic.summary) + '</span></button>').join('')
+        + '</section><footer class="footer">Разбирай грамматику на русском и практикуй немецкий в предложениях из жизни.</footer>'
+        + '<button class="clear-progress" type="button" data-action="clear-progress">Очистить прогресс</button>';
     }
     function renderLesson(topic, index) {
       const exercise = topic.exercises[index];
@@ -639,6 +675,12 @@ const evaluateSpeechText = function evaluateSpeechText(transcript, answer) {
           stopSpeechRecognition();
           goHome();
           break;
+        case 'clear-progress':
+          if (window.confirm('Очистить весь сохранённый прогресс по темам?')) {
+            progressStore.clear();
+            renderHome();
+          }
+          break;
         case 'speak':
           if (state.speechListening) {
             stopSpeechRecognition();
@@ -675,6 +717,7 @@ const evaluateSpeechText = function evaluateSpeechText(transcript, answer) {
           }
           const exercise = route.topic.exercises[route.index];
           const words = state.selected.map((index) => exercise.options[index]);
+          progressStore.markCompleted(route.topic.id, exercise.id);
           state.hasAttempted = true;
           state.feedback = answersMatch(words, exercise.answer) ? 'correct' : 'incorrect';
           render();
