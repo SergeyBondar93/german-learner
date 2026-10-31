@@ -392,7 +392,7 @@ const output = `<!doctype html>
     button, a { font: inherit; }
     button { color: inherit; }
     .page { width: min(100% - 32px, 720px); margin: 0 auto; padding: 0 0 calc(32px + env(safe-area-inset-bottom)); }
-    .page.lesson-page { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+    .page.lesson-page { padding-bottom: calc(190px + env(safe-area-inset-bottom)); }
     .header { padding: calc(16px + env(safe-area-inset-top)) 0 18px; border-bottom: 1px solid var(--border); }
     .brand { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: .3px; }
     .caption { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
@@ -442,10 +442,10 @@ const output = `<!doctype html>
     .words { display: flex; flex-wrap: wrap; gap: 8px; }
     .answer-area .words { display: block; width: 100%; line-height: 1.9; }
     .word { min-height: 42px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 24px; background: #f5f7fb; font-size: 14px; font-weight: 650; cursor: pointer; touch-action: manipulation; }
-    .speech-controls { display: grid; grid-template-columns: 80% minmax(0, 1fr); gap: 7px 8px; margin: 0 0 12px; }
+    .speech-controls { display: grid; width: min(100%, 688px); grid-template-columns: 80% minmax(0, 1fr); gap: 7px 8px; }
     .speech-button { width: 100%; }
     .play-answer-button { width: 100%; padding: 0 8px; font-size: 20px; }
-    .speech-status { grid-column: 1 / -1; min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .speech-status { width: min(100%, 688px); min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
     .word.selected { border-color: #b8c6ff; background: var(--accent-light); color: var(--accent); font-weight: 750; }
     .word:disabled { opacity: .35; cursor: default; transform: none; }
     .answer-word { display: inline; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--accent); font-size: 16px; font-weight: 650; line-height: inherit; cursor: pointer; touch-action: manipulation; }
@@ -458,7 +458,7 @@ const output = `<!doctype html>
     .feedback .correct-answer { color: var(--ink); font-size: 15px; font-weight: 750; }
     .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; padding: 0 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); font-size: 14px; font-weight: 750; cursor: pointer; touch-action: manipulation; }
     .button.primary { width: 100%; margin-top: 15px; border-color: var(--accent); background: var(--accent); color: #fff; }
-    .exercise-action-bar { position: fixed; z-index: 10; inset: auto 0 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: rgba(245, 247, 251, .96); backdrop-filter: blur(12px); }
+    .exercise-action-bar { position: fixed; z-index: 10; inset: auto 0 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: rgba(245, 247, 251, .96); backdrop-filter: blur(12px); }
     .exercise-action-bar .button.primary { display: flex; width: min(100%, 688px); min-height: 52px; margin: 0 auto; }
     .navigation { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; }
     .navigation .button { min-width: 104px; }
@@ -675,8 +675,7 @@ const output = `<!doctype html>
         const selected = state.selected.includes(optionIndex);
         return '<button class="word" type="button" data-action="add" data-index="' + optionIndex + '" aria-label="Добавить слово ' + escapeHtml(word) + '"' + (selected || state.feedback ? ' disabled' : '') + '>' + escapeHtml(word) + '</button>';
       }).join('');
-      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p>';
-      const speechControlsWithEvaluation = speechControls + '</div>';
+      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button></div><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p>';
       let feedback = '';
       if (state.feedback) {
         const isCorrect = state.feedback === 'correct';
@@ -685,7 +684,7 @@ const output = `<!doctype html>
       const actionLabel = state.feedback
         ? index < topic.exercises.length - 1 ? 'Дальше' : 'К темам'
         : 'Проверить ответ';
-      const action = '<aside class="exercise-action-bar"><button class="button primary" type="button" data-action="primary">' + actionLabel + '</button></aside>';
+      const action = '<aside class="exercise-action-bar" aria-label="Управление упражнением">' + speechControls + '<button class="button primary" type="button" data-action="primary">' + actionLabel + '</button></aside>';
       app.innerHTML = renderHeader()
         + '<button class="back" type="button" data-action="home">‹  Все темы</button>'
         + '<section class="lesson-heading"><p class="eyebrow">' + escapeHtml(topic.level) + ' · ГРАММАТИКА</p><h1>' + escapeHtml(topic.title) + '</h1><p class="body-copy">' + escapeHtml(topic.explanation) + '</p></section>'
@@ -694,7 +693,7 @@ const output = `<!doctype html>
         + '<section class="trainer-heading"><div><p class="label">ТРЕНАЖЁР</p><h2>Собери предложение</h2></div><span class="progress-text">' + (index + 1) + ' / ' + topic.exercises.length + '</span></section>'
         + '<div class="progress-track" role="progressbar" aria-label="Прогресс темы" aria-valuemin="1" aria-valuemax="' + topic.exercises.length + '" aria-valuenow="' + (index + 1) + '"><div class="progress-fill" style="width:' + ((index + 1) / topic.exercises.length * 100) + '%"></div></div>'
         + '<section class="exercise-card"><p class="prompt-label">Переведи на немецкий</p><p class="prompt">' + escapeHtml(exercise.prompt) + '</p>'
-        + '<div class="answer-area" aria-label="Твой ответ">' + answer + '</div>' + speechControlsWithEvaluation + '<div class="words">' + options + '</div>' + feedback + '</section>'
+        + '<div class="answer-area" aria-label="Твой ответ">' + answer + '</div><div class="words">' + options + '</div>' + feedback + '</section>'
         + '<nav class="navigation" aria-label="Упражнения"><button class="button" type="button" data-action="previous"' + (index === 0 ? ' disabled' : '') + '>Назад</button>'
         + '</nav>' + action;
     }
@@ -718,7 +717,7 @@ const output = `<!doctype html>
         state.hasAttempted = false;
         state.exerciseId = route.topic.exercises[route.index].id;
         state.speechStatus = SpeechRecognition
-          ? 'Нажми и произнеси предложение по-немецки. Распознавание зависит от браузера и может использовать интернет.'
+          ? ''
           : 'Голосовой ввод не поддерживается этим браузером. Можно выбрать слова вручную.';
       }
       renderLesson(route.topic, route.index);
