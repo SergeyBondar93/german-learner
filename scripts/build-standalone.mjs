@@ -570,7 +570,7 @@ const output = `<!doctype html>
         const unrecognizedStatus = match.unrecognized.length
           ? 'Не распознаны: ' + match.unrecognized.join(', ') + '. Ответ можно поправить вручную.'
           : 'Слова выбраны — проверь ответ.';
-        state.speechStatus = 'Распознано: «' + match.transcript + '». ' + approximateStatus + unrecognizedStatus;
+        state.speechStatus = '' //'Распознано: «' + match.transcript + '». ' + approximateStatus + unrecognizedStatus;
         render();
       };
       recognition.onerror = (event) => {
