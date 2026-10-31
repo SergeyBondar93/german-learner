@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f5f7fb">
-  <meta name="description" content="Офлайн-тренажёр немецкой грамматики A2–B2 с объяснениями на русском.">
+  <meta name="description" content="Мобильный веб-тренажёр немецкой грамматики A2–B2 с объяснениями на русском.">
   <title>Wort für Wort — немецкий по шагам</title>
   <style>
     :root {
@@ -283,7 +283,7 @@
         + LEVELS.map((level) => '<button class="tab" type="button" data-action="level" data-level="' + level + '" aria-pressed="' + (state.level === level) + '">' + level + '</button>').join('')
         + '</nav><section aria-label="Темы: ' + escapeHtml(sectionTitle) + '"><div class="level-heading"><h2>' + escapeHtml(sectionTitle) + '</h2><span>' + escapeHtml(sectionSummary) + '</span></div>'
         + topics.map((topic, index) => '<button class="topic-card" type="button" data-action="open" data-topic="' + escapeHtml(topic.id) + '"><span class="topic-top"><span class="topic-number">' + String(index + 1).padStart(2, '0') + '</span><span class="topic-meta">' + topic.exercises.length + ' заданий</span></span><span class="topic-title">' + escapeHtml(topic.title) + '</span><span class="topic-summary">' + escapeHtml(topic.summary) + '</span></button>').join('')
-        + '</section><footer class="footer">Объяснения и упражнения встроены в файл; интернет нужен только для внешних ссылок.</footer>';
+        + '</section><footer class="footer">Разбирай грамматику на русском и практикуй немецкий в предложениях из жизни.</footer>';
     }
     function renderLesson(topic, index) {
       const exercise = topic.exercises[index];
