@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "german-app",
-    "slug": "german-app",
+    "name": "Wort für Wort",
+    "slug": "wort-fuer-wort",
+    "scheme": "wort-fuer-wort",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,6 +21,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
