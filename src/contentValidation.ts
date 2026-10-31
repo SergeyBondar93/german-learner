@@ -1,5 +1,5 @@
 import { Exercise, Level, Topic } from './types';
-import { normalizeWord, tokenize } from './trainer';
+import { distractorCount, normalizeWord, tokenize } from './trainer';
 
 const REQUIRED_LEVELS: Level[] = ['A2', 'B1', 'B2'];
 
@@ -17,9 +17,10 @@ function validateExercise(exercise: Exercise, topic: Topic): void {
   assert(promptWords.length >= 4 && promptWords.length <= 12, `${label}: prompt must contain 4–12 words.`);
   assert(/[\u0400-\u04FF]/.test(exercise.prompt), `${label}: prompt must be in Russian.`);
   assert(answerWords.length >= 4 && answerWords.length <= 12, `${label}: answer must contain 4–12 words.`);
+  const expectedDistractorCount = distractorCount(answerWords.length);
   assert(
-    exercise.options.length === answerWords.length * 2,
-    `${label}: expected ${answerWords.length * 2} options, received ${exercise.options.length}.`,
+    exercise.options.length === answerWords.length + expectedDistractorCount,
+    `${label}: expected ${answerWords.length + expectedDistractorCount} options, received ${exercise.options.length}.`,
   );
 
   const normalizedOptions = exercise.options.map(normalizeWord);
@@ -33,7 +34,7 @@ function validateExercise(exercise: Exercise, topic: Topic): void {
   }
 
   const distractors = normalizedOptions.filter((word) => !answerCounts.has(word));
-  assert(distractors.length === answerWords.length, `${label}: expected one distractor per answer word.`);
+  assert(distractors.length === expectedDistractorCount, `${label}: expected ${expectedDistractorCount} distractors.`);
   assert(new Set(distractors).size === distractors.length, `${label}: distractors must be unique.`);
   assert(exercise.id.length > 0, `${label}: exercise id must not be empty.`);
 }

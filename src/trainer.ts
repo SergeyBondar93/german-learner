@@ -17,21 +17,26 @@ export function answersMatch(selected: string[], answer: string): boolean {
   );
 }
 
+export function distractorCount(answerWordCount: number): number {
+  return Math.max(2, Math.floor(answerWordCount * 0.3));
+}
+
 export function createOptions(
   answer: string,
   distractors: string[],
 ): string[] {
   const answerWords = tokenize(answer);
+  const requiredDistractorCount = distractorCount(answerWords.length);
   const correctWords = new Set(answerWords.map(normalizeWord));
   const uniqueDistractors = Array.from(
     new Set(distractors.filter((word) => !correctWords.has(normalizeWord(word)))),
   );
 
-  if (uniqueDistractors.length < answerWords.length) {
+  if (uniqueDistractors.length < requiredDistractorCount) {
     throw new Error(
-      `Need ${answerWords.length} unique distractors for "${answer}", got ${uniqueDistractors.length}.`,
+      `Need ${requiredDistractorCount} unique distractors for "${answer}", got ${uniqueDistractors.length}.`,
     );
   }
 
-  return [...answerWords, ...uniqueDistractors.slice(0, answerWords.length)];
+  return [...answerWords, ...uniqueDistractors.slice(0, requiredDistractorCount)];
 }
