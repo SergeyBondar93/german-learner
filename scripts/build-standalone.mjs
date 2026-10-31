@@ -49,9 +49,21 @@ const speechMatchingSource = [
   `const matchSpeechAlternatives = ${speechMatching.matchSpeechAlternatives.toString()};`,
 ].join('\n');
 const progressStoreSource = `const createProgressStore = ${progress.createProgressStore.toString()};`;
+const answerMatchingSource = [
+  `const ARTICLE_ALTERNATIVES = ${JSON.stringify(trainer.ARTICLE_ALTERNATIVES)};`,
+  `const DATIVE_ARTICLES = new Set(${JSON.stringify([...trainer.DATIVE_ARTICLES])});`,
+  `const ACCUSATIVE_ARTICLES = new Set(${JSON.stringify([...trainer.ACCUSATIVE_ARTICLES])});`,
+  `const DITRANSITIVE_VERBS = new Set(${JSON.stringify([...trainer.DITRANSITIVE_VERBS])});`,
+  `const ARTICLE_WORDS = new Set(${JSON.stringify([...trainer.ARTICLE_WORDS])});`,
+  `const ARTICLELESS_PLURALS = new Set(${JSON.stringify([...trainer.ARTICLELESS_PLURALS])});`,
+  `const ARTICLELESS_MASS_NOUNS = new Set(${JSON.stringify([...trainer.ARTICLELESS_MASS_NOUNS])});`,
+  `const getOptionalArticleIndexes = ${trainer.getOptionalArticleIndexes.toString()};`,
+  `const getDativeAccusativeReordering = ${trainer.getDativeAccusativeReordering.toString()};`,
+  `const answersMatch = ${trainer.answersMatch.toString()};`,
+].join('\n');
 
-if (content.TOPICS.length !== 18) {
-  throw new Error(`Expected 18 topics, found ${content.TOPICS.length}.`);
+if (content.TOPICS.length !== 25) {
+  throw new Error(`Expected 25 topics, found ${content.TOPICS.length}.`);
 }
 for (const topic of content.TOPICS) {
   if (topic.exercises.length !== 15) {
@@ -488,11 +500,7 @@ const output = `<!doctype html>
       .toLocaleLowerCase('de-DE')
       .replace(/^[„“"'([{]+/, '')
       .replace(/[.,!?;:…»”"')\\]}“]+$/, '');
-    const answersMatch = (selected, answer) => {
-      const expected = tokenize(answer).map(normalizeWord);
-      return selected.length === expected.length
-        && selected.every((word, index) => normalizeWord(word) === expected[index]);
-    };
+    ${answerMatchingSource}
     ${speechMatchingSource}
     const speechErrorMessage = (error) => {
       const messages = {
@@ -633,7 +641,7 @@ const output = `<!doctype html>
       const sectionTitle = pronounsSelected ? 'Местоимения' : 'Уровень ' + state.level;
       const sectionSummary = pronounsSelected
         ? '500 упражнений · 15 случайно за раунд · 150 для ед. числа и 350 для мн. числа'
-        : '6 тем · 50 упражнений в банке · 15 случайно за раунд';
+        : topics.length + ' тем · 50 упражнений в банке · 15 случайно за раунд';
       app.innerHTML = renderHeader()
         + '<section class="intro"><p class="eyebrow">ТВОЯ ПРАКТИКА</p><h1>Выбери тему</h1><p class="body-copy">Разбирай грамматику на русском и сразу закрепляй её в предложениях из жизни.</p></section>'
         + '<nav class="level-tabs" aria-label="Уровень немецкого">'
@@ -775,7 +783,7 @@ const output = `<!doctype html>
           const words = state.selected.map((index) => exercise.options[index]);
           progressStore.markCompleted(route.topic.id, exercise.id);
           state.hasAttempted = true;
-          state.feedback = answersMatch(words, exercise.answer) ? 'correct' : 'incorrect';
+          state.feedback = answersMatch(words, exercise.answer, exercise.options) ? 'correct' : 'incorrect';
           render();
           break;
         }
@@ -795,4 +803,4 @@ const output = `<!doctype html>
 
 const outputPath = path.join(root, 'index.html');
 writeFileSync(outputPath, output, 'utf8');
-console.log(`Created ${path.relative(root, outputPath)} with 18 topics at 50 exercises each, 500 pronoun exercises, and ${SESSION_EXERCISE_COUNT} randomly selected per visit.`);
+console.log(`Created ${path.relative(root, outputPath)} with ${exerciseTopics.length} topics at 50 exercises each, 500 pronoun exercises, and ${SESSION_EXERCISE_COUNT} randomly selected per visit.`);

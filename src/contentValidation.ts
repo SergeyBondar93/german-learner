@@ -2,6 +2,11 @@ import { Exercise, Level, Topic } from './types';
 import { distractorCount, normalizeWord, tokenize } from './trainer';
 
 const REQUIRED_LEVELS: Level[] = ['A2', 'B1', 'B2'];
+const EXPECTED_TOPIC_COUNTS: Record<Level, number> = {
+  A2: 8,
+  B1: 9,
+  B2: 8,
+};
 
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) {
@@ -48,13 +53,16 @@ function countWords(words: string[]): Map<string, number> {
 }
 
 export function validateContent(topics: Topic[]): void {
-  assert(topics.length === 18, `Expected 18 topics, received ${topics.length}.`);
+  assert(topics.length === 25, `Expected 25 topics, received ${topics.length}.`);
   const ids = new Set(topics.map((topic) => topic.id));
   assert(ids.size === topics.length, 'Topic ids must be unique.');
 
   for (const level of REQUIRED_LEVELS) {
     const levelTopics = topics.filter((topic) => topic.level === level);
-    assert(levelTopics.length === 6, `Expected 6 topics for ${level}, received ${levelTopics.length}.`);
+    assert(
+      levelTopics.length === EXPECTED_TOPIC_COUNTS[level],
+      `Expected ${EXPECTED_TOPIC_COUNTS[level]} topics for ${level}, received ${levelTopics.length}.`,
+    );
   }
 
   for (const topic of topics) {

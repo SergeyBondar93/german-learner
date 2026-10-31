@@ -40,7 +40,11 @@ export default function LessonRoute() {
 
   function checkAnswer(currentExercise: Exercise) {
     const chosenWords = selectedOptions.map((index) => currentExercise.options[index]);
-    setFeedback(answersMatch(chosenWords, currentExercise.answer) ? 'correct' : 'incorrect');
+    setFeedback(
+      answersMatch(chosenWords, currentExercise.answer, currentExercise.options)
+        ? 'correct'
+        : 'incorrect',
+    );
   }
 
   function moveToExercise(nextIndex: number) {

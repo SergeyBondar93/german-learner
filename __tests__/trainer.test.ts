@@ -18,6 +18,66 @@ describe('trainer helpers', () => {
     expect(answersMatch(['Ich', 'habe'], 'Ich habe Zeit.')).toBe(false);
   });
 
+  it('accepts definite and indefinite articles with the same case ending', () => {
+    const options = createOptions('Ich gebe seiner Mutter einen Apfel.', ['heute', 'gleich']);
+
+    expect(options).toContain('den');
+    expect(answersMatch(
+      ['Ich', 'gebe', 'seiner', 'Mutter', 'den', 'Apfel'],
+      'Ich gebe seiner Mutter einen Apfel.',
+      options,
+    )).toBe(true);
+    expect(answersMatch(
+      ['Ich', 'gebe', 'seiner', 'Mutter', 'dem', 'Apfel'],
+      'Ich gebe seiner Mutter einen Apfel.',
+      [...options, 'dem'],
+    )).toBe(false);
+  });
+
+  it('accepts omitted articles before plural and mass nouns, but not count nouns', () => {
+    const pluralAnswer = 'Ich kaufe die Äpfel.';
+    expect(answersMatch(
+      ['Ich', 'kaufe', 'Äpfel.'],
+      pluralAnswer,
+      createOptions(pluralAnswer, ['heute', 'gleich']),
+    )).toBe(true);
+
+    const massNounAnswer = 'Ich trinke jeden Tag den Kaffee.';
+    expect(answersMatch(
+      ['Ich', 'trinke', 'jeden', 'Tag', 'Kaffee.'],
+      massNounAnswer,
+      createOptions(massNounAnswer, ['heute', 'gleich']),
+    )).toBe(true);
+
+    const countNounAnswer = 'Ich esse einen Apfel.';
+    expect(answersMatch(
+      ['Ich', 'esse', 'Apfel.'],
+      countNounAnswer,
+      createOptions(countNounAnswer, ['heute', 'gleich']),
+    )).toBe(false);
+  });
+
+  it('accepts dative and accusative noun phrases in either order for ditransitive verbs', () => {
+    const answer = 'Ich gebe seiner Mutter einen Apfel.';
+    const options = createOptions(answer, ['heute', 'gleich']);
+
+    expect(answersMatch(
+      ['Ich', 'gebe', 'einen', 'Apfel', 'seiner', 'Mutter'],
+      answer,
+      options,
+    )).toBe(true);
+    expect(answersMatch(
+      ['Ich', 'gebe', 'seiner', 'Apfel', 'einen', 'Mutter'],
+      answer,
+      options,
+    )).toBe(false);
+    expect(answersMatch(
+      ['Ich', 'sehe', 'einen', 'Apfel', 'seiner', 'Mutter'],
+      'Ich sehe seiner Mutter einen Apfel.',
+      options,
+    )).toBe(false);
+  });
+
   it('builds a word bank with 30 percent distractors rounded down and at least two', () => {
     const options = createOptions('Ich rufe dich an.', ['heute', 'später', 'morgen', 'gleich']);
     expect(distractorCount(4)).toBe(2);

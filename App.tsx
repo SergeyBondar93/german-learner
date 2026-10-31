@@ -41,7 +41,7 @@ export function TopicList({ onOpen }: { onOpen: (topic: Topic) => void }) {
           <View key={level} style={styles.levelSection}>
             <View style={styles.levelHeading}>
               <Text style={styles.levelTitle}>{level}</Text>
-              <Text style={styles.levelCaption}>6 тем · 15 упражнений в каждой</Text>
+              <Text style={styles.levelCaption}>{topics.length} тем · 15 упражнений в каждой</Text>
             </View>
             {topics.map((topic, index) => (
               <Pressable

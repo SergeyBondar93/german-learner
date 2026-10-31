@@ -38,11 +38,25 @@ describe('learning content', () => {
     }
   });
 
-  it('contains six topics and 90 exercises at each level', () => {
+  it('contains the expected topic and exercise counts at each level', () => {
+    const expectedCounts = { A2: 8, B1: 9, B2: 8 };
     for (const level of LEVELS) {
-      expect(getTopicsByLevel(level)).toHaveLength(6);
-      expect(getTopicsByLevel(level).reduce((total, topic) => total + topic.exercises.length, 0)).toBe(90);
+      expect(getTopicsByLevel(level)).toHaveLength(expectedCounts[level]);
+      expect(getTopicsByLevel(level).reduce((total, topic) => total + topic.exercises.length, 0))
+        .toBe(expectedCounts[level] * 15);
     }
+  });
+
+  it('covers the grammar topics added from the A2–B2 comparison', () => {
+    expect(TOPICS.map(({ id }) => id)).toEqual(expect.arrayContaining([
+      'a2-adjektivdeklination',
+      'a2-komparativ-superlativ',
+      'b1-verben-mit-praepositionen',
+      'b1-indirekte-fragen',
+      'b1-temporalsaetze',
+      'b2-genitiv',
+      'b2-partizipialattribute',
+    ]));
   });
 
   it('satisfies all lesson and word-bank requirements', () => {
