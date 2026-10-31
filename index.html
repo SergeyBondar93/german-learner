@@ -79,6 +79,20 @@
     .speech-button { width: 100%; }
     .play-answer-button { width: 100%; padding: 0 8px; font-size: 20px; }
     .speech-status { grid-column: 1 / -1; min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .speech-evaluation { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+    .speech-evaluation-item { min-width: 48px; display: grid; justify-items: center; gap: 2px; }
+    .speech-evaluation-word { padding: 3px 7px; border-radius: 7px; font-weight: 750; }
+    .speech-evaluation-word.green { background: #e7f6ee; color: #16794a; }
+    .speech-evaluation-word.yellow { background: #fff8d9; color: #826000; }
+    .speech-evaluation-word.orange { background: #fff0df; color: #a64b00; }
+    .speech-evaluation-word.red { background: #feeceb; color: #b42318; }
+    .speech-evaluation-word .letter-green { color: #16794a; }
+    .speech-evaluation-word .letter-yellow { color: #b47b00; text-decoration: underline; text-decoration-style: dotted; }
+    .speech-evaluation-word .letter-orange { color: #a64b00; text-decoration: underline; }
+    .speech-evaluation-word .letter-red { color: #b42318; text-decoration: underline; }
+    .speech-evaluation-target { max-width: 120px; color: var(--muted); font-size: 10px; text-align: center; overflow-wrap: anywhere; }
+    .speech-evaluation-missing { flex-basis: 100%; color: #b42318; font-size: 11px; }
+    .speech-evaluation-legend { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
     .word.selected { border-color: #b8c6ff; background: var(--accent-light); color: var(--accent); font-weight: 750; }
     .word:disabled { opacity: .35; cursor: default; transform: none; }
     .answer-word { display: inline; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--accent); font-size: 16px; font-weight: 650; line-height: inherit; cursor: pointer; touch-action: manipulation; }
@@ -122,6 +136,7 @@
       feedback: null,
       exerciseSets: Object.create(null),
       hasAttempted: false,
+      speechEvaluation: null,
       speechStatus: SpeechRecognition
         ? 'Произнеси предложение по-немецки. Для сомнительных слов я попробую подобрать похожие слова из ответа.'
         : 'Голосовой ввод не поддерживается этим браузером. Можно выбрать слова вручную.',
@@ -233,6 +248,148 @@ const matchSpeechAlternatives = function matchSpeechAlternatives(transcripts, op
         }
         : { transcript: '', selected: [], approximate: [], unrecognized: [], exactCount: 0, answerCount: 0 };
 };
+const evaluateSpeechText = function evaluateSpeechText(transcript, answer) {
+    const normalize = (word) => word
+        .toLocaleLowerCase('de-DE')
+        .replace(/^[„“"'([{]+/, '')
+        .replace(/[.,!?;:…»”"')\]}“]+$/, '');
+    const spoken = transcript.trim().split(/\s+/).filter(Boolean);
+    const expected = answer.trim().split(/\s+/).filter(Boolean);
+    const left = spoken.map((word) => Array.from(normalize(word)));
+    const right = expected.map((word) => Array.from(normalize(word)));
+    const wordDistance = (first, second) => {
+        let previous = Array.from({ length: second.length + 1 }, (_, index) => index);
+        for (let firstIndex = 1; firstIndex <= first.length; firstIndex += 1) {
+            const current = [firstIndex];
+            for (let secondIndex = 1; secondIndex <= second.length; secondIndex += 1) {
+                current[secondIndex] = Math.min(current[secondIndex - 1] + 1, previous[secondIndex] + 1, previous[secondIndex - 1] + (first[firstIndex - 1] === second[secondIndex - 1] ? 0 : 1));
+            }
+            previous = current;
+        }
+        return previous[second.length];
+    };
+    const similarity = (first, second) => {
+        const longest = Math.max(first.length, second.length);
+        return longest === 0 ? 1 : 1 - wordDistance(first, second) / longest;
+    };
+    const rows = left.length + 1;
+    const columns = right.length + 1;
+    const costs = Array.from({ length: rows }, () => Array(columns).fill(0));
+    const steps = Array.from({ length: rows }, () => Array(columns).fill('match'));
+    for (let row = 1; row < rows; row += 1) {
+        costs[row][0] = row * 0.8;
+        steps[row][0] = 'insert';
+    }
+    for (let column = 1; column < columns; column += 1) {
+        costs[0][column] = column * 0.8;
+        steps[0][column] = 'delete';
+    }
+    for (let row = 1; row < rows; row += 1) {
+        for (let column = 1; column < columns; column += 1) {
+            const choices = [
+                { cost: costs[row - 1][column - 1] + 1 - similarity(left[row - 1], right[column - 1]), step: 'match' },
+                { cost: costs[row - 1][column] + 0.8, step: 'insert' },
+                { cost: costs[row][column - 1] + 0.8, step: 'delete' },
+            ].sort((first, second) => first.cost - second.cost);
+            costs[row][column] = choices[0].cost;
+            steps[row][column] = choices[0].step;
+        }
+    }
+    const expectedForSpoken = Array(spoken.length).fill(null);
+    const matchedExpected = new Set();
+    let row = spoken.length;
+    let column = expected.length;
+    while (row > 0 || column > 0) {
+        const step = row === 0 ? 'delete' : column === 0 ? 'insert' : steps[row][column];
+        if (step === 'match') {
+            expectedForSpoken[row - 1] = column - 1;
+            matchedExpected.add(column - 1);
+            row -= 1;
+            column -= 1;
+        }
+        else if (step === 'insert') {
+            row -= 1;
+        }
+        else {
+            column -= 1;
+        }
+    }
+    const words = spoken.map((word, index) => {
+        const expectedIndex = expectedForSpoken[index];
+        const target = expectedIndex === null ? null : expected[expectedIndex];
+        const normalized = left[index];
+        const targetLetters = expectedIndex === null ? [] : right[expectedIndex];
+        const score = target === null ? 0 : similarity(normalized, targetLetters);
+        const color = score >= 0.9
+            ? 'green'
+            : score >= 0.75
+                ? 'yellow'
+                : score >= 0.5
+                    ? 'orange'
+                    : 'red';
+        let previous = Array.from({ length: targetLetters.length + 1 }, (_, letterIndex) => letterIndex);
+        const letterSteps = Array.from({ length: normalized.length + 1 }, () => Array(targetLetters.length + 1).fill('match'));
+        for (let letterIndex = 1; letterIndex <= normalized.length; letterIndex += 1) {
+            letterSteps[letterIndex][0] = 'insert';
+        }
+        for (let letterIndex = 1; letterIndex <= targetLetters.length; letterIndex += 1) {
+            letterSteps[0][letterIndex] = 'delete';
+        }
+        for (let letterIndex = 1; letterIndex <= normalized.length; letterIndex += 1) {
+            const current = [letterIndex];
+            for (let targetIndex = 1; targetIndex <= targetLetters.length; targetIndex += 1) {
+                const choices = [
+                    { cost: previous[targetIndex - 1] + (normalized[letterIndex - 1] === targetLetters[targetIndex - 1] ? 0 : 1), step: 'match' },
+                    { cost: current[targetIndex - 1] + 1, step: 'delete' },
+                    { cost: previous[targetIndex] + 1, step: 'insert' },
+                ].sort((first, second) => first.cost - second.cost);
+                current[targetIndex] = choices[0].cost;
+                letterSteps[letterIndex][targetIndex] = choices[0].step;
+            }
+            previous = current;
+        }
+        const letterColors = Array(normalized.length).fill('red');
+        let letterIndex = normalized.length;
+        let targetIndex = targetLetters.length;
+        while (letterIndex > 0 || targetIndex > 0) {
+            const step = letterIndex === 0 ? 'delete' : targetIndex === 0 ? 'insert' : letterSteps[letterIndex][targetIndex];
+            if (step === 'match') {
+                letterColors[letterIndex - 1] = normalized[letterIndex - 1] === targetLetters[targetIndex - 1]
+                    ? 'green'
+                    : color === 'green' ? 'yellow' : color;
+                letterIndex -= 1;
+                targetIndex -= 1;
+            }
+            else if (step === 'insert') {
+                letterColors[letterIndex - 1] = 'red';
+                letterIndex -= 1;
+            }
+            else {
+                targetIndex -= 1;
+            }
+        }
+        let normalizedIndex = 0;
+        const letters = Array.from(word).map((value) => {
+            const normalizedValue = normalize(value);
+            if (!normalizedValue)
+                return { value, color: 'neutral' };
+            const color = letterColors[normalizedIndex] || 'red';
+            normalizedIndex += Array.from(normalizedValue).length;
+            return { value, color };
+        });
+        return {
+            spoken: word,
+            expected: target,
+            score,
+            color,
+            letters,
+        };
+    });
+    return {
+        words,
+        missing: expected.filter((_, index) => !matchedExpected.has(index)),
+    };
+};
     const speechErrorMessage = (error) => {
       const messages = {
         'not-allowed': 'Нет доступа к микрофону. Разреши его в настройках браузера.',
@@ -267,6 +424,7 @@ const matchSpeechAlternatives = function matchSpeechAlternatives(transcripts, op
       const exerciseId = route.topic.exercises[route.index].id;
       state.selected = [];
       state.feedback = null;
+      state.speechEvaluation = null;
       state.speechStatus = 'Слушаю… Говори по-немецки.';
       state.speechListening = true;
       const recognition = new SpeechRecognition();
@@ -287,6 +445,7 @@ const matchSpeechAlternatives = function matchSpeechAlternatives(transcripts, op
           .filter(Boolean);
         const match = matchSpeechAlternatives(alternatives, exercise.options, exercise.answer);
         state.selected = match.selected;
+        state.speechEvaluation = evaluateSpeechText(match.transcript, exercise.answer);
         state.speechListening = false;
         const approximateStatus = match.approximate.length
           ? 'Похожие слова сопоставлены: ' + match.approximate.map(({ spoken, matched }) => '«' + spoken + '» → «' + matched + '»').join(', ') + '. '
@@ -398,7 +557,18 @@ const matchSpeechAlternatives = function matchSpeechAlternatives(transcripts, op
         const selected = state.selected.includes(optionIndex);
         return '<button class="word" type="button" data-action="add" data-index="' + optionIndex + '" aria-label="Добавить слово ' + escapeHtml(word) + '"' + (selected || state.feedback ? ' disabled' : '') + '>' + escapeHtml(word) + '</button>';
       }).join('');
-      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p></div>';
+      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p>';
+      const speechEvaluation = state.speechEvaluation
+        ? '<div class="speech-evaluation" aria-label="Сходство распознанных слов с правильным ответом">'
+          + state.speechEvaluation.words.map((word) =>
+            '<div class="speech-evaluation-item"><span class="speech-evaluation-word ' + word.color + '" aria-label="' + escapeHtml(word.spoken) + ', сходство ' + Math.round(word.score * 100) + '%">'
+            + word.letters.map((letter) => '<span class="letter-' + letter.color + '">' + escapeHtml(letter.value) + '</span>').join('')
+            + '</span>' + (word.expected ? '<span class="speech-evaluation-target">→ ' + escapeHtml(word.expected) + '</span>' : '<span class="speech-evaluation-target">нет в ответе</span>') + '</div>',
+          ).join('')
+          + (state.speechEvaluation.missing.length ? '<p class="speech-evaluation-missing">Не распознаны: ' + state.speechEvaluation.missing.map(escapeHtml).join(', ') + '</p>' : '')
+          + '<p class="speech-evaluation-legend">Зелёный — совпало · жёлтый — небольшое отличие · оранжевый — заметное · красный — не совпало.</p></div>'
+        : '';
+      const speechControlsWithEvaluation = speechControls + speechEvaluation + '</div>';
       let feedback = '';
       if (state.feedback) {
         const isCorrect = state.feedback === 'correct';
@@ -416,7 +586,7 @@ const matchSpeechAlternatives = function matchSpeechAlternatives(transcripts, op
         + '<section class="trainer-heading"><div><p class="label">ТРЕНАЖЁР</p><h2>Собери предложение</h2></div><span class="progress-text">' + (index + 1) + ' / ' + topic.exercises.length + '</span></section>'
         + '<div class="progress-track" role="progressbar" aria-label="Прогресс темы" aria-valuemin="1" aria-valuemax="' + topic.exercises.length + '" aria-valuenow="' + (index + 1) + '"><div class="progress-fill" style="width:' + ((index + 1) / topic.exercises.length * 100) + '%"></div></div>'
         + '<section class="exercise-card"><p class="prompt-label">Переведи на немецкий</p><p class="prompt">' + escapeHtml(exercise.prompt) + '</p>'
-        + '<div class="answer-area" aria-label="Твой ответ">' + answer + '</div>' + speechControls + '<div class="words">' + options + '</div>' + feedback + '</section>'
+        + '<div class="answer-area" aria-label="Твой ответ">' + answer + '</div>' + speechControlsWithEvaluation + '<div class="words">' + options + '</div>' + feedback + '</section>'
         + '<nav class="navigation" aria-label="Упражнения"><button class="button" type="button" data-action="previous"' + (index === 0 ? ' disabled' : '') + '>Назад</button>'
         + '</nav>' + action;
     }
@@ -438,6 +608,7 @@ const matchSpeechAlternatives = function matchSpeechAlternatives(transcripts, op
         state.selected = [];
         state.feedback = null;
         state.hasAttempted = false;
+        state.speechEvaluation = null;
         state.exerciseId = route.topic.exercises[route.index].id;
         state.speechStatus = SpeechRecognition
           ? 'Нажми и произнеси предложение по-немецки. Распознавание зависит от браузера и может использовать интернет.'

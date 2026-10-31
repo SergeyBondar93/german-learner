@@ -46,6 +46,7 @@ const pronouns = loadTypeScriptModule(
 const speechMatchingSource = [
   `const matchSpokenWords = ${speechMatching.matchSpokenWords.toString()};`,
   `const matchSpeechAlternatives = ${speechMatching.matchSpeechAlternatives.toString()};`,
+  `const evaluateSpeechText = ${speechMatching.evaluateSpeechText.toString()};`,
 ].join('\n');
 
 if (content.TOPICS.length !== 18) {
@@ -423,6 +424,20 @@ const output = `<!doctype html>
     .speech-button { width: 100%; }
     .play-answer-button { width: 100%; padding: 0 8px; font-size: 20px; }
     .speech-status { grid-column: 1 / -1; min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .speech-evaluation { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+    .speech-evaluation-item { min-width: 48px; display: grid; justify-items: center; gap: 2px; }
+    .speech-evaluation-word { padding: 3px 7px; border-radius: 7px; font-weight: 750; }
+    .speech-evaluation-word.green { background: #e7f6ee; color: #16794a; }
+    .speech-evaluation-word.yellow { background: #fff8d9; color: #826000; }
+    .speech-evaluation-word.orange { background: #fff0df; color: #a64b00; }
+    .speech-evaluation-word.red { background: #feeceb; color: #b42318; }
+    .speech-evaluation-word .letter-green { color: #16794a; }
+    .speech-evaluation-word .letter-yellow { color: #b47b00; text-decoration: underline; text-decoration-style: dotted; }
+    .speech-evaluation-word .letter-orange { color: #a64b00; text-decoration: underline; }
+    .speech-evaluation-word .letter-red { color: #b42318; text-decoration: underline; }
+    .speech-evaluation-target { max-width: 120px; color: var(--muted); font-size: 10px; text-align: center; overflow-wrap: anywhere; }
+    .speech-evaluation-missing { flex-basis: 100%; color: #b42318; font-size: 11px; }
+    .speech-evaluation-legend { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
     .word.selected { border-color: #b8c6ff; background: var(--accent-light); color: var(--accent); font-weight: 750; }
     .word:disabled { opacity: .35; cursor: default; transform: none; }
     .answer-word { display: inline; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--accent); font-size: 16px; font-weight: 650; line-height: inherit; cursor: pointer; touch-action: manipulation; }
@@ -466,6 +481,7 @@ const output = `<!doctype html>
       feedback: null,
       exerciseSets: Object.create(null),
       hasAttempted: false,
+      speechEvaluation: null,
       speechStatus: SpeechRecognition
         ? 'Произнеси предложение по-немецки. Для сомнительных слов я попробую подобрать похожие слова из ответа.'
         : 'Голосовой ввод не поддерживается этим браузером. Можно выбрать слова вручную.',
@@ -522,6 +538,7 @@ const output = `<!doctype html>
       const exerciseId = route.topic.exercises[route.index].id;
       state.selected = [];
       state.feedback = null;
+      state.speechEvaluation = null;
       state.speechStatus = 'Слушаю… Говори по-немецки.';
       state.speechListening = true;
       const recognition = new SpeechRecognition();
@@ -542,6 +559,7 @@ const output = `<!doctype html>
           .filter(Boolean);
         const match = matchSpeechAlternatives(alternatives, exercise.options, exercise.answer);
         state.selected = match.selected;
+        state.speechEvaluation = evaluateSpeechText(match.transcript, exercise.answer);
         state.speechListening = false;
         const approximateStatus = match.approximate.length
           ? 'Похожие слова сопоставлены: ' + match.approximate.map(({ spoken, matched }) => '«' + spoken + '» → «' + matched + '»').join(', ') + '. '
@@ -653,7 +671,18 @@ const output = `<!doctype html>
         const selected = state.selected.includes(optionIndex);
         return '<button class="word" type="button" data-action="add" data-index="' + optionIndex + '" aria-label="Добавить слово ' + escapeHtml(word) + '"' + (selected || state.feedback ? ' disabled' : '') + '>' + escapeHtml(word) + '</button>';
       }).join('');
-      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p></div>';
+      const speechControls = '<div class="speech-controls"><button class="button speech-button" type="button" data-action="speak"' + (SpeechRecognition ? '' : ' disabled') + '>' + (state.speechListening ? 'Остановить запись' : '🎙 Сказать предложение') + '</button><button class="button play-answer-button" type="button" data-action="play-answer" aria-label="Воспроизвести правильный ответ" title="Воспроизвести правильный ответ"' + (canSynthesizeSpeech && state.hasAttempted ? '' : ' disabled') + '>🔊</button><p class="speech-status" role="status">' + escapeHtml(state.speechStatus) + '</p>';
+      const speechEvaluation = state.speechEvaluation
+        ? '<div class="speech-evaluation" aria-label="Сходство распознанных слов с правильным ответом">'
+          + state.speechEvaluation.words.map((word) =>
+            '<div class="speech-evaluation-item"><span class="speech-evaluation-word ' + word.color + '" aria-label="' + escapeHtml(word.spoken) + ', сходство ' + Math.round(word.score * 100) + '%">'
+            + word.letters.map((letter) => '<span class="letter-' + letter.color + '">' + escapeHtml(letter.value) + '</span>').join('')
+            + '</span>' + (word.expected ? '<span class="speech-evaluation-target">→ ' + escapeHtml(word.expected) + '</span>' : '<span class="speech-evaluation-target">нет в ответе</span>') + '</div>',
+          ).join('')
+          + (state.speechEvaluation.missing.length ? '<p class="speech-evaluation-missing">Не распознаны: ' + state.speechEvaluation.missing.map(escapeHtml).join(', ') + '</p>' : '')
+          + '<p class="speech-evaluation-legend">Зелёный — совпало · жёлтый — небольшое отличие · оранжевый — заметное · красный — не совпало.</p></div>'
+        : '';
+      const speechControlsWithEvaluation = speechControls + speechEvaluation + '</div>';
       let feedback = '';
       if (state.feedback) {
         const isCorrect = state.feedback === 'correct';
@@ -671,7 +700,7 @@ const output = `<!doctype html>
         + '<section class="trainer-heading"><div><p class="label">ТРЕНАЖЁР</p><h2>Собери предложение</h2></div><span class="progress-text">' + (index + 1) + ' / ' + topic.exercises.length + '</span></section>'
         + '<div class="progress-track" role="progressbar" aria-label="Прогресс темы" aria-valuemin="1" aria-valuemax="' + topic.exercises.length + '" aria-valuenow="' + (index + 1) + '"><div class="progress-fill" style="width:' + ((index + 1) / topic.exercises.length * 100) + '%"></div></div>'
         + '<section class="exercise-card"><p class="prompt-label">Переведи на немецкий</p><p class="prompt">' + escapeHtml(exercise.prompt) + '</p>'
-        + '<div class="answer-area" aria-label="Твой ответ">' + answer + '</div>' + speechControls + '<div class="words">' + options + '</div>' + feedback + '</section>'
+        + '<div class="answer-area" aria-label="Твой ответ">' + answer + '</div>' + speechControlsWithEvaluation + '<div class="words">' + options + '</div>' + feedback + '</section>'
         + '<nav class="navigation" aria-label="Упражнения"><button class="button" type="button" data-action="previous"' + (index === 0 ? ' disabled' : '') + '>Назад</button>'
         + '</nav>' + action;
     }
@@ -693,6 +722,7 @@ const output = `<!doctype html>
         state.selected = [];
         state.feedback = null;
         state.hasAttempted = false;
+        state.speechEvaluation = null;
         state.exerciseId = route.topic.exercises[route.index].id;
         state.speechStatus = SpeechRecognition
           ? 'Нажми и произнеси предложение по-немецки. Распознавание зависит от браузера и может использовать интернет.'
