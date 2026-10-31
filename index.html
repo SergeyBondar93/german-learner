@@ -184,17 +184,17 @@ const getOptionalArticleIndexes = function getOptionalArticleIndexes(words) {
     const normalized = words.map(normalizeWord);
     const optional = new Set();
     for (let index = 0; index + 1 < normalized.length; index += 1) {
-        if (!exports.ARTICLE_WORDS.has(normalized[index]))
+        if (!ARTICLE_WORDS.has(normalized[index]))
             continue;
         const followingWord = normalized[index + 1];
-        if (exports.ARTICLELESS_PLURALS.has(followingWord) || exports.ARTICLELESS_MASS_NOUNS.has(followingWord)) {
+        if (ARTICLELESS_PLURALS.has(followingWord) || ARTICLELESS_MASS_NOUNS.has(followingWord)) {
             optional.add(index);
         }
     }
     return optional;
 };
 const getDativeAccusativeReordering = function getDativeAccusativeReordering(originalWords, normalizedWords) {
-    if (!normalizedWords.some((word) => exports.DITRANSITIVE_VERBS.has(word))) {
+    if (!normalizedWords.some((word) => DITRANSITIVE_VERBS.has(word))) {
         return [];
     }
     const phraseEnds = (start) => {
@@ -204,14 +204,14 @@ const getDativeAccusativeReordering = function getDativeAccusativeReordering(ori
         while (end < normalizedWords.length
             && /^[a-zäöüß]/.test(originalWords[end])
             && /(?:e|en|em|er|es)$/.test(normalizedWords[end])
-            && !exports.DATIVE_ARTICLES.has(normalizedWords[end])
-            && !exports.ACCUSATIVE_ARTICLES.has(normalizedWords[end])) {
+            && !DATIVE_ARTICLES.has(normalizedWords[end])
+            && !ACCUSATIVE_ARTICLES.has(normalizedWords[end])) {
             end += 1;
         }
         return end;
     };
-    const isDative = (word) => exports.DATIVE_ARTICLES.has(word);
-    const isAccusative = (word) => exports.ACCUSATIVE_ARTICLES.has(word);
+    const isDative = (word) => DATIVE_ARTICLES.has(word);
+    const isAccusative = (word) => ACCUSATIVE_ARTICLES.has(word);
     for (let firstStart = 0; firstStart < normalizedWords.length; firstStart += 1) {
         const firstEnd = phraseEnds(firstStart);
         if (firstEnd < 0 || firstEnd >= normalizedWords.length)
@@ -251,7 +251,7 @@ const answersMatch = function answersMatch(selected, answer, options) {
                 return false;
             const selectedWord = normalizeWord(selected[selectedIndex]);
             const expectedWord = candidate[expectedIndex];
-            const alternative = exports.ARTICLE_ALTERNATIVES[expectedWord];
+            const alternative = ARTICLE_ALTERNATIVES[expectedWord];
             const wordMatches = selectedWord === expectedWord
                 || (alternative === selectedWord && allowedAlternatives.has(selectedWord));
             return wordMatches && matchesFrom(expectedIndex + 1, selectedIndex + 1);

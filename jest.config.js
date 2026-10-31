@@ -1,6 +1,8 @@
 module.exports = {
-  preset: 'jest-expo',
-  testMatch: ['**/__tests__/**/*.test.ts?(x)'],
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/**/*.test.ts'],
   clearMocks: true,
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  transform: {
+    '^.+\\.ts$': '<rootDir>/scripts/jest-transformer.cjs',
+  },
 };

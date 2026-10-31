@@ -2,7 +2,7 @@
 
 ## Product
 
-The user-facing product is a mobile-first German-learning web app. `index.html` is generated from `scripts/build-standalone.mjs`; keep the generated page and its source generator in sync.
+The user-facing product is a mobile-first German-learning website. `index.html` is generated from `scripts/build-standalone.mjs`; keep the generated page and its source generator in sync. This repository contains only the static website and its content/build tooling.
 
 ## Changes
 
@@ -13,7 +13,7 @@ The user-facing product is a mobile-first German-learning web app. `index.html` 
 
 ## Validation
 
-Run the smallest relevant checks, and before completing app changes run:
+Run the smallest relevant checks, and before completing website changes run:
 
 ```sh
 npm run build:html

@@ -1,12 +1,16 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["jest"]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "src/**/*.ts",
+    "__tests__/**/*.ts"
   ]
 }

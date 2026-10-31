@@ -44,6 +44,10 @@ const pronouns = loadTypeScriptModule(
   path.join(root, 'src', 'pronounExercises.ts'),
   { './trainer': trainer },
 );
+function standaloneFunction(fn) {
+  return fn.toString().replace(/\bexports\.([A-Za-z_$][\w$]*)/g, '$1');
+}
+
 const speechMatchingSource = [
   `const matchSpokenWords = ${speechMatching.matchSpokenWords.toString()};`,
   `const matchSpeechAlternatives = ${speechMatching.matchSpeechAlternatives.toString()};`,
@@ -57,10 +61,13 @@ const answerMatchingSource = [
   `const ARTICLE_WORDS = new Set(${JSON.stringify([...trainer.ARTICLE_WORDS])});`,
   `const ARTICLELESS_PLURALS = new Set(${JSON.stringify([...trainer.ARTICLELESS_PLURALS])});`,
   `const ARTICLELESS_MASS_NOUNS = new Set(${JSON.stringify([...trainer.ARTICLELESS_MASS_NOUNS])});`,
-  `const getOptionalArticleIndexes = ${trainer.getOptionalArticleIndexes.toString()};`,
-  `const getDativeAccusativeReordering = ${trainer.getDativeAccusativeReordering.toString()};`,
-  `const answersMatch = ${trainer.answersMatch.toString()};`,
+  `const getOptionalArticleIndexes = ${standaloneFunction(trainer.getOptionalArticleIndexes)};`,
+  `const getDativeAccusativeReordering = ${standaloneFunction(trainer.getDativeAccusativeReordering)};`,
+  `const answersMatch = ${standaloneFunction(trainer.answersMatch)};`,
 ].join('\n');
+if (/\bexports\./.test(answerMatchingSource)) {
+  throw new Error('Answer-matching functions must not reference CommonJS exports in the standalone page.');
+}
 
 if (content.TOPICS.length !== 25) {
   throw new Error(`Expected 25 topics, found ${content.TOPICS.length}.`);
