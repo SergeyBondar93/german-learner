@@ -225,7 +225,19 @@ const drafts: TopicDraft[] = [
     title: 'Präteritum: sein, haben и модальные',
     summary: 'Рассказываем о прошлом и передаём его фон.',
     explanation:
-      'В повествовании часто используются формы Präteritum. Особенно естественно в прошедшем времени звучат war, hatte и модальные глаголы: musste, konnte, wollte. У большинства остальных глаголов в разговоре чаще встречается Perfekt.',
+      'Präteritum — простое прошедшее время. В разговоре оно особенно часто встречается у sein, haben и модальных глаголов, а также в рассказах, новостях и письменных текстах. Для большинства других глаголов в повседневной речи обычно выбирают Perfekt: Ich habe gearbeitet.\n\nУ правильных глаголов основа обычно получает окончание -te: machen → ich machte, du machtest. У сильных глаголов может измениться гласная: fahren → fuhr. Форму глагола ставьте на второе место в обычном главном предложении; инфинитив после модального глагола, как и в настоящем времени, остаётся в конце.',
+    grammarTables: [{
+      caption: 'Частые формы Präteritum',
+      headers: ['Infinitiv', 'ich / er, sie, es', 'du', 'wir / sie, Sie', 'Пример'],
+      rows: [
+        ['sein', 'war', 'warst', 'waren', 'Wir waren zu Hause.'],
+        ['haben', 'hatte', 'hattest', 'hatten', 'Sie hatte keine Zeit.'],
+        ['können', 'konnte', 'konntest', 'konnten', 'Er konnte nicht kommen.'],
+        ['müssen', 'musste', 'musstest', 'mussten', 'Wir mussten warten.'],
+        ['dürfen', 'durfte', 'durftest', 'durften', 'Du durftest früher gehen.'],
+        ['wollen', 'wollte', 'wolltest', 'wollten', 'Sie wollten helfen.'],
+      ],
+    }],
     examples: ['Früher hatte ich weniger Zeit.', 'Wir mussten lange warten.'],
     tip: 'Начните с трёх опор: war — был, hatte — имел, konnte/musste — мог/должен был.',
     reference: {
@@ -257,7 +269,22 @@ const drafts: TopicDraft[] = [
     title: 'Предлоги с Dativ и Akkusativ',
     summary: 'Описываем местоположение и направление движения.',
     explanation:
-      'Предлоги an, auf, hinter, in, neben, über, unter, vor и zwischen могут требовать оба падежа. Где? (место без направления) — Dativ; куда? (направление) — Akkusativ.',
+      'Предлоги an, auf, hinter, in, neben, über, unter, vor и zwischen называют Wechselpräpositionen: с ними возможны и Dativ, и Akkusativ. Выбирайте падеж не только по наличию движения, а по смыслу: где уже находится предмет или человек? — Dativ; куда направлено перемещение или изменение положения? — Akkusativ.\n\nСравните stehen (стоять где-либо) и stellen (поставить куда-либо), liegen (лежать) и legen (положить), sitzen (сидеть) и setzen (посадить/сесть). Сам предлог не меняется, меняется артикль: in dem Zimmer → ins Zimmer (in das Zimmer).',
+    grammarTables: [{
+      caption: 'Вопрос «где?» или «куда?»',
+      headers: ['Предлог', 'Dativ: где?', 'Akkusativ: куда?'],
+      rows: [
+        ['an', 'Das Bild hängt an der Wand.', 'Ich hänge das Bild an die Wand.'],
+        ['auf', 'Die Tasse steht auf dem Tisch.', 'Stell die Tasse auf den Tisch.'],
+        ['hinter', 'Der Ball liegt hinter dem Schrank.', 'Der Ball rollt hinter den Schrank.'],
+        ['in', 'Wir sind im Kino.', 'Wir gehen ins Kino.'],
+        ['neben', 'Das Fahrrad steht neben der Garage.', 'Er stellt das Fahrrad neben die Garage.'],
+        ['über', 'Die Lampe hängt über dem Tisch.', 'Häng die Lampe über den Tisch.'],
+        ['unter', 'Die Katze schläft unter dem Bett.', 'Die Katze läuft unter das Bett.'],
+        ['vor', 'Der Bus wartet vor dem Hotel.', 'Der Bus fährt vor das Hotel.'],
+        ['zwischen', 'Der Tisch steht zwischen den Betten.', 'Stell den Tisch zwischen die Betten.'],
+      ],
+    }],
     examples: ['Das Bild hängt an der Wand.', 'Ich hänge das Bild an die Wand.'],
     tip: 'Сравните «где?» и «куда?»: стоять у двери — Dativ; поставить коробку к двери — Akkusativ.',
     reference: {
@@ -289,7 +316,17 @@ const drafts: TopicDraft[] = [
     title: 'Относительные придаточные',
     summary: 'Уточняем, о каком человеке или предмете говорим.',
     explanation:
-      'Относительное местоимение согласуется с существительным в роде и числе, а его падеж зависит от роли внутри придаточного. Само придаточное отделяется запятыми, глагол уходит в конец.',
+      'Relativsatz уточняет существительное и отделяется запятыми. Относительное местоимение выбирает род и число по слову, которое оно заменяет, но падеж определяется его собственной ролью внутри придаточного: кто выполняет действие — Nominativ, кого/что видят — Akkusativ, кому помогают — Dativ.\n\nМестоимение стоит в начале придаточной части, а спрягаемый глагол уходит в конец. Если придаточное вставлено в середину главного предложения, закройте его второй запятой. Для принадлежности употребляются dessen (мужской/средний род) и deren (женский род/множественное число); после предлога падеж тоже зависит от управления: mit der, für den.',
+    grammarTables: [{
+      caption: 'Формы относительных местоимений',
+      headers: ['Падеж', 'Мужской род', 'Женский род', 'Средний род', 'Множественное число'],
+      rows: [
+        ['Nominativ', 'der', 'die', 'das', 'die'],
+        ['Akkusativ', 'den', 'die', 'das', 'die'],
+        ['Dativ', 'dem', 'der', 'dem', 'denen'],
+        ['Genitiv (принадлежность)', 'dessen', 'deren', 'dessen', 'deren'],
+      ],
+    }],
     examples: ['Das ist die Kollegin, die neben mir arbeitet.', 'Kennst du den Mann, dem ich geholfen habe?'],
     tip: 'Сначала найдите, какую работу местоимение делает внутри придаточного: подлежащее, прямое или косвенное дополнение.',
     distractors: ['der', 'die', 'das', 'den', 'dem', 'dessen', 'deren', 'denen', 'welcher', 'welche', 'welches', 'wer', 'was', 'dem ich', 'den sie', 'der er', 'die wir', 'denen sie', 'arbeitet', 'wohnt', 'kennt', 'hilft', 'gekauft hat', 'gesucht haben', 'besucht'],
@@ -317,7 +354,18 @@ const drafts: TopicDraft[] = [
     title: 'Konjunktiv II: вежливость и желания',
     summary: 'Формулируем просьбы, советы и воображаемые ситуации.',
     explanation:
-      'Konjunktiv II смягчает просьбы и выражает нереальное желание. Часто встречаются würde + Infinitiv, hätte, wäre, könnte и sollte: Könnten Sie mir helfen?',
+      'Konjunktiv II помогает говорить мягче и обозначать не факт, а желание, совет или воображаемую ситуацию. Самые употребительные формы нужно запомнить: wäre (sein), hätte (haben), könnte (können), müsste (müssen), sollte (sollen). Для большинства других глаголов удобно использовать würde + Infinitiv.\n\nВ просьбе Könnten Sie …? форма Konjunktiv II делает вопрос вежливее, чем Können Sie …? В условии с wenn глагол придаточной части стоит в конце, а в главной части с würde смысловой инфинитив тоже уходит в конец. После würde обычно не ставят ещё один Konjunktiv II: правильно Wenn ich Zeit hätte, würde ich kommen.',
+    grammarTables: [{
+      caption: 'Основные формы и типичные функции',
+      headers: ['Форма', 'Пример', 'Значение'],
+      rows: [
+        ['wäre / hätte', 'Wenn ich mehr Zeit hätte …', 'Нереальное условие'],
+        ['würde + Infinitiv', 'Ich würde gern länger bleiben.', 'Желание или гипотеза'],
+        ['könnte / dürfte', 'Könnten Sie mir helfen?', 'Вежливая просьба'],
+        ['sollte', 'Du solltest früher schlafen.', 'Совет'],
+        ['müsste', 'Wir müssten ein Taxi nehmen.', 'Предположение или необходимость'],
+      ],
+    }],
     examples: ['Ich würde gern einen Termin vereinbaren.', 'An deiner Stelle würde ich früher losfahren.'],
     tip: 'Для вежливой просьбы замените «можете?» на könnten Sie…? — это звучит мягче.',
     distractors: ['würde', 'würdest', 'würden', 'wäre', 'wären', 'hätte', 'hätten', 'könnte', 'könnten', 'sollte', 'sollten', 'müsste', 'müssten', 'möchte', 'möchten', 'kann', 'muss', 'ist', 'hat', 'geht', 'gern', 'vielleicht', 'bitte', 'heute', 'morgen', 'früher', 'sofort'],
@@ -345,7 +393,18 @@ const drafts: TopicDraft[] = [
     title: 'Инфинитив с zu',
     summary: 'Говорим о намерениях, планах и том, что важно сделать.',
     explanation:
-      'После многих глаголов и выражений используется zu + Infinitiv: Ich versuche, pünktlich zu sein. У отделяемого глагола zu встаёт между приставкой и корнем: einzukaufen. После модальных глаголов zu не ставится.',
+      'Инфинитивная группа с zu не спрягается и обычно называет действие, о котором говорят в основном предложении: Ich hoffe, bald eine Wohnung zu finden. Перед группой часто стоит запятая, особенно после глаголов решения, попытки, обещания и ожидания, а также после конструкций es ist wichtig/schwierig.\n\nУ отделяемого глагола zu помещается между приставкой и корнем: einzukaufen, anzurufen. У неотделяемых приставок и глаголов на -ieren частица ставится перед инфинитивом без дополнительного разрыва: zu bezahlen, zu studieren. После модальных глаголов, lassen и некоторых глаголов восприятия используется инфинитив без zu: Ich muss gehen. Для цели «чтобы» с отдельным подлежащим обычно нужен damit, а не zu.',
+    grammarTables: [{
+      caption: 'Когда ставить zu',
+      headers: ['Модель', 'Форма', 'Пример'],
+      rows: [
+        ['Обычный инфинитив', 'zu + Infinitiv', 'Sie versucht, pünktlich zu kommen.'],
+        ['Отделяемый глагол', 'приставка + zu + основа', 'Er hat vergessen, mich anzurufen.'],
+        ['Модальный глагол', 'без zu', 'Wir müssen heute länger arbeiten.'],
+        ['Глагол на -ieren', 'zu перед инфинитивом', 'Sie plant, in Berlin zu studieren.'],
+        ['Цель с другим подлежащим', 'damit + придаточное', 'Ich erkläre es, damit du es verstehst.'],
+      ],
+    }],
     examples: ['Sie hat vergessen, den Termin abzusagen.', 'Es ist wichtig, genug Wasser zu trinken.'],
     tip: 'У отделяемого глагола поместите zu внутрь: anrufen → anzurufen, aufräumen → aufzuräumen.',
     distractors: ['zu', 'nicht zu', 'um', 'ohne', 'statt', 'dass', 'ob', 'damit', 'anzurufen', 'abzusagen', 'mitzubringen', 'aufzuräumen', 'einzukaufen', 'pünktlich zu sein', 'gesund zu bleiben', 'zu lernen', 'zu warten', 'zu bezahlen', 'zu vergessen', 'zu erklären', 'heute', 'morgen', 'später', 'gleich', 'gern', 'oft'],
@@ -373,7 +432,17 @@ const drafts: TopicDraft[] = [
     title: 'obwohl и trotzdem',
     summary: 'Выражаем контраст и неожиданное следствие.',
     explanation:
-      'После obwohl глагол придаточного уходит в конец: Obwohl es regnet, gehen wir spazieren. Trotzdem занимает место в главной части и требует обычного порядка: Trotzdem gehen wir spazieren.',
+      'Obwohl вводит уступительное придаточное: факт в нём не мешает результату в главной части. Как после weil и dass, спрягаемый глагол obwohl-придаточного ставится в конец. Если придаточное стоит первым, после запятой главный глагол идёт сразу, потому что придаточная часть занимает первое место.\n\nTrotzdem — наречие-связка «несмотря на это». Оно не вводит придаточное и не отправляет глагол в конец. Если trotzdem стоит первым, оно занимает первую позицию, поэтому спрягаемый глагол сразу следует за ним: Trotzdem gehen wir spazieren. Возможен и порядок Sie geht trotzdem spazieren. Не путайте trotzdem с deshalb: первое выражает неожиданный контраст, второе — ожидаемое следствие.',
+    grammarTables: [{
+      caption: 'Два способа выразить уступку',
+      headers: ['Средство', 'Порядок слов', 'Пример'],
+      rows: [
+        ['obwohl + придаточное', 'Глагол в конце придаточного', 'Obwohl es regnet, gehen wir spazieren.'],
+        ['Hauptsatz + trotzdem', 'Обычный порядок главного предложения', 'Es regnet. Trotzdem gehen wir spazieren.'],
+        ['Trotzdem в начале', 'После trotzdem сразу глагол', 'Trotzdem bleiben die Kinder draußen.'],
+        ['deshalb (сравнение)', 'Следствие, глагол после связки', 'Es regnet, deshalb bleiben wir zu Hause.'],
+      ],
+    }],
     examples: ['Obwohl sie müde ist, lernt sie weiter.', 'Sie ist müde. Trotzdem lernt sie weiter.'],
     tip: 'obwohl вводит причину-контраст внутри придаточного; trotzdem связывает отдельное утверждение («несмотря на это»).',
     distractors: ['obwohl', 'trotzdem', 'dennoch', 'aber', 'weil', 'deshalb', 'obwohl es', 'obwohl sie', 'ist', 'sind', 'war', 'hat', 'regnet', 'schneit', 'müde', 'krank', 'spät', 'teuer', 'bleibt', 'geht', 'fährt', 'arbeitet', 'lernt', 'heute', 'morgen', 'weiter', 'zu Hause'],
@@ -401,7 +470,19 @@ const drafts: TopicDraft[] = [
     title: 'Пассивный залог',
     summary: 'Сосредотачиваемся на действии и результате.',
     explanation:
-      'В Präsens Vorgangspassiv образуется как werden + Partizip II: Die Straße wird repariert. Действующее лицо можно добавить с von + Dativ. В Präteritum используется wurde/wurden.',
+      'Vorgangspassiv выдвигает на первый план действие или процесс, а не исполнителя. Формула: форма werden в нужном времени + Partizip II в конце. Объект активного предложения обычно становится подлежащим пассивного и сохраняет Nominativ/согласование: Die Firma repariert die Straße → Die Straße wird repariert.\n\nИсполнителя называют с von + Dativ (von der Firma), причину/средство — иногда с durch + Akkusativ. Если исполнитель неизвестен или неважен, его опускают. Для результата или состояния используют Zustandspassiv: sein + Partizip II (Die Tür ist geschlossen). Не смешивайте его с Vorgangspassiv: wird geschlossen — закрывают сейчас/происходит действие, ist geschlossen — закрыта/состояние.',
+    grammarTables: [{
+      caption: 'Формы пассива на примере reparieren',
+      headers: ['Время / вид', 'Формула', 'Пример'],
+      rows: [
+        ['Präsens: процесс', 'werden + Partizip II', 'Die Straße wird repariert.'],
+        ['Präteritum: процесс', 'wurde / wurden + Partizip II', 'Die Straße wurde repariert.'],
+        ['Perfekt: процесс', 'sein + Partizip II + worden', 'Die Straße ist repariert worden.'],
+        ['Plusquamperfekt: процесс', 'war + Partizip II + worden', 'Die Straße war repariert worden.'],
+        ['Zustandspassiv: результат', 'sein + Partizip II', 'Die Straße ist repariert.'],
+        ['Исполнитель', 'von + Dativ', 'Die Straße wird von der Firma repariert.'],
+      ],
+    }],
     examples: ['Die Rechnung wird heute bezahlt.', 'Das Gebäude wurde 1920 gebaut.'],
     tip: 'Если важно «что происходит», а не «кто делает», поставьте werden в нужное время и Partizip II в конец.',
     reference: {
@@ -433,7 +514,18 @@ const drafts: TopicDraft[] = [
     title: 'Plusquamperfekt',
     summary: 'Показываем, что одно событие произошло раньше другого в прошлом.',
     explanation:
-      'Plusquamperfekt образуется из Präteritum haben/sein и Partizip II: hatte gemacht, war gegangen. Он часто встречается вместе с nachdem и bevor, когда важно обозначить последовательность прошлых событий.',
+      'Plusquamperfekt — «прошлое до другого прошлого»: действие уже завершилось к моменту второго события в прошлом. Он образуется из Präteritum вспомогательного haben или sein и Partizip II: hatte geprüft, war angekommen. Выбор haben/sein обычно тот же, что в Perfekt.\n\nВ повествовании более раннее действие часто ставят в Plusquamperfekt, а более позднее — в Präteritum или Perfekt: Als wir ankamen, hatte der Film schon begonnen. После nachdem Plusquamperfekt особенно типичен; bevor часто сочетается с Präteritum, но время выбирают по смыслу, а не механически по союзу. В придаточной части изменяемый вспомогательный глагол стоит в конце.',
+    grammarTables: [{
+      caption: 'Как образовать Plusquamperfekt',
+      headers: ['Инфинитив', 'Вспомогательный глагол в Präteritum', 'Partizip II', 'Plusquamperfekt'],
+      rows: [
+        ['machen', 'hatte', 'gemacht', 'hatte gemacht'],
+        ['sehen', 'hatte', 'gesehen', 'hatte gesehen'],
+        ['ankommen', 'war', 'angekommen', 'war angekommen'],
+        ['aufstehen', 'war', 'aufgestanden', 'war aufgestanden'],
+        ['bleiben', 'war', 'geblieben', 'war geblieben'],
+      ],
+    }],
     examples: ['Nachdem wir gegessen hatten, gingen wir spazieren.', 'Sie war schon gegangen, bevor ich ankam.'],
     tip: 'Составьте временную линию: более раннее прошедшее действие — Plusquamperfekt, следующее — Präteritum или Perfekt.',
     distractors: ['hatte', 'hatten', 'war', 'waren', 'hat', 'haben', 'ist', 'sind', 'gemacht', 'gegessen', 'gesehen', 'gefahren', 'angekommen', 'gegangen', 'angerufen', 'gefunden', 'bevor', 'nachdem', 'als', 'während', 'schon', 'noch', 'zuerst', 'später', 'danach', 'vorher', 'gestern', 'bereits'],
@@ -461,7 +553,18 @@ const drafts: TopicDraft[] = [
     title: 'Konjunktiv II в прошедшем',
     summary: 'Говорим о сожалениях и несбывшихся возможностях.',
     explanation:
-      'О нереальном прошлом говорят с hätte/wäre + Partizip II. В условных фразах обычно: Wenn ich mehr Zeit gehabt hätte, wäre ich länger geblieben. Главная часть может начинаться с hätte/wäre.',
+      'Konjunktiv II Vergangenheit описывает несостоявшееся действие, сожаление или результат, который мог бы быть в прошлом. Формула: hätte/wäre в Konjunktiv II + Partizip II. Выбирайте haben или sein по тем же правилам, что и в Perfekt: Ich hätte angerufen; ich wäre gefahren.\n\nВ условном предложении с wenn вспомогательный глагол придаточной части стоит в конце; в главной части он также занимает конец после Partizip II. Если главная часть стоит первой, она может начинаться с hätte/wäre: Ich wäre früher gekommen, wenn ich den Weg gekannt hätte. Для гипотезы о настоящем используют другие формы (Wenn ich Zeit hätte, käme ich mit), поэтому не переносите автоматически форму Vergangenheit.',
+    grammarTables: [{
+      caption: 'Формы нереального прошлого',
+      headers: ['Инфинитив', 'Konjunktiv II Vergangenheit', 'Условие и результат'],
+      rows: [
+        ['anrufen', 'hätte angerufen', 'Wenn ich es gewusst hätte, hätte ich angerufen.'],
+        ['fahren', 'wäre gefahren', 'Wenn wir früher losgefahren wären, …'],
+        ['bleiben', 'wäre geblieben', '… wäre ich länger geblieben.'],
+        ['helfen', 'hätte geholfen', 'Sie hätte dir geholfen, wenn sie Zeit gehabt hätte.'],
+        ['sehen', 'hätte gesehen', 'Wenn er den Fehler gesehen hätte, …'],
+      ],
+    }],
     examples: ['Ich hätte dich früher angerufen.', 'Wenn wir losgefahren wären, hätten wir den Zug erreicht.'],
     tip: 'Оба действия уже в прошлом? Используйте hätte/wäre вместе с Partizip II, а не würde + Infinitiv.',
     distractors: ['hätte', 'hätten', 'wäre', 'wären', 'habe', 'hatte', 'war', 'würde', 'gehabt', 'gemacht', 'gewusst', 'gefahren', 'gekommen', 'geblieben', 'angerufen', 'gekauft', 'gefunden', 'geschrieben', 'wenn', 'weil', 'obwohl', 'früher', 'rechtzeitig', 'länger', 'nicht', 'schon', 'damals', 'vielleicht'],
@@ -489,7 +592,19 @@ const drafts: TopicDraft[] = [
     title: 'Konjunktiv I и косвенная речь',
     summary: 'Передаём чужие слова нейтрально, не выдавая их за факт.',
     explanation:
-      'В новостях и официальной речи Konjunktiv I показывает, что слова принадлежат другому человеку: Er sagt, er sei krank. Если форма совпадает с Indikativ, часто используют Konjunktiv II.',
+      'Konjunktiv I — нейтральный способ передать чужое утверждение, особенно в новостях, протоколах и официальном стиле. Он показывает источник информации: Er sagt, er sei krank — это слова другого человека, а не обязательно подтверждённый факт. Глагол обычно стоит в конце придаточного с dass или в самостоятельном сообщении без dass.\n\nФорму настоящего времени образуют от основы инфинитива с окончаниями -e, -est, -e, -en, -et, -en. Особенно важно различать er sei/er habe и Indikativ er ist/er hat. Во множественном числе формы часто совпадают с Indikativ; чтобы не получилось двусмысленности, используют Konjunktiv II (sie hätten). Для прошедшего времени: habe/sei + Partizip II; для будущего: werde + Infinitiv. При пересказе сохраняйте лицо и время исходного высказывания.',
+    grammarTables: [{
+      caption: 'Частые формы Konjunktiv I',
+      headers: ['Глагол', 'er / sie / es', 'wir / sie / Sie', 'Косвенная речь'],
+      rows: [
+        ['sein', 'sei', 'seien', 'Er sagt, er sei krank.'],
+        ['haben', 'habe', 'haben', 'Sie sagt, sie habe Zeit.'],
+        ['werden', 'werde', 'werden', 'Er meint, es werde regnen.'],
+        ['können', 'könne', 'können', 'Sie sagt, er könne helfen.'],
+        ['müssen', 'müsse', 'müssen', 'Er sagt, sie müsse gehen.'],
+        ['Прошедшее', 'habe / sei + Partizip II', 'hätten / seien + Partizip II', 'Er sagt, er habe angerufen.'],
+      ],
+    }],
     examples: ['Die Sprecherin erklärt, die Lage sei stabil.', 'Er berichtet, die Gäste hätten abgesagt.'],
     tip: 'В косвенной речи держите дистанцию: «по его словам, он…». Обратите внимание на формы sei, habe, könne, werde.',
     reference: {
@@ -521,7 +636,19 @@ const drafts: TopicDraft[] = [
     title: 'Номинализация',
     summary: 'Преобразуем действия в существительные для официального стиля.',
     explanation:
-      'В формальном немецком глаголы и прилагательные часто превращаются в существительные: nachdem wir geprüft haben → nach der Prüfung. Существительные пишутся с заглавной буквы; предлог часто определяет падеж.',
+      'Номинализация превращает действие или признак в существительное. Это делает текст компактнее и типично для официальных объявлений, инструкций и письменной речи: nachdem wir angekommen waren → nach der Ankunft. Номинализированные слова пишутся с заглавной буквы и получают артикль; глагольная группа обычно превращается в существительное среднего рода (das Lesen, das Rauchen).\n\nВременные и причинные союзы можно заменить предлогом с существительным: nachdem → nach + Dativ, während → während + Genitiv, weil → wegen + Genitiv. Глагол часто переходит в существительное на -ung (prüfen → die Prüfung), но форма не всегда предсказуема и её нужно учить. Инфинитив как существительное обычно имеет das: beim Ausfüllen = bei dem Ausfüllen. Следите за артиклем, падежом и окончанием прилагательного.',
+    grammarTables: [{
+      caption: 'Типичные переходы к номинализации',
+      headers: ['Глагольная / придаточная форма', 'Номинализация', 'Что изменилось'],
+      rows: [
+        ['nachdem wir angekommen waren', 'nach der Ankunft', 'nach + Dativ; действие → существительное'],
+        ['während wir warten', 'während des Wartens', 'Genitiv; инфинитив получает das'],
+        ['weil der Strom ausfiel', 'wegen des Stromausfalls', 'причина выражена Genitiv'],
+        ['bevor die Reise beginnt', 'vor dem Beginn der Reise', 'vor + Dativ'],
+        ['Wir füllen das Formular aus.', 'beim Ausfüllen des Formulars', 'bei dem + субстантивированный инфинитив'],
+        ['prüfen', 'die Prüfung', 'глагол → существительное на -ung'],
+      ],
+    }],
     examples: ['Vor der Abreise kontrollieren wir die Tickets.', 'Nach dem Essen gehen wir spazieren.'],
     tip: 'После nach/vor/bei часто стоит существительное. Проверьте, нельзя ли заменить длинную конструкцию «после того как…» на «после…».',
     distractors: ['nach', 'vor', 'bei', 'während', 'wegen', 'trotz', 'aufgrund', 'zum', 'zur', 'beim', 'nach dem', 'vor der', 'bei der', 'während des', 'wegen der', 'Prüfung', 'Abreise', 'Anmeldung', 'Besprechung', 'Lieferung', 'Öffnung', 'Umzug', 'Essen', 'Gespräch', 'Ankunft', 'Kündigung', 'Entscheidung', 'Reparatur'],
@@ -549,7 +676,18 @@ const drafts: TopicDraft[] = [
     title: 'Сложные союзы и связки',
     summary: 'Строим точные связи между условиями и следствиями.',
     explanation:
-      'Связки je … desto … сравнивают взаимозависимые изменения; zwar … aber … признают контраст; sofern и falls задают условие. После частицы в начале главной части соблюдайте порядок слов: Je länger es dauert, desto ungeduldiger werden wir.',
+      'Сложные связки помогают точно показать отношение между двумя высказываниями. Je … desto … связывает два меняющихся признака: в первой части je-предложение ведёт себя как придаточное (глагол в конце), а после desto в главной части глагол стоит сразу после сравнительной группы. Чем дольше длится ожидание, тем сильнее растёт нетерпение.\n\nZwar … aber … сначала признаёт факт, затем ограничивает его: Zwar ist die Wohnung klein, aber sie ist günstig. Sofern и falls вводят условие «если»; sofern звучит более формально и часто подразумевает условие, которое должно быть соблюдено. В условной части глагол уходит в конец, а в главной после запятой глагол занимает первое место, если придаточная часть стоит первой.',
+    grammarTables: [{
+      caption: 'Структура связок и порядок слов',
+      headers: ['Связка', 'Порядок слов', 'Пример'],
+      rows: [
+        ['je … desto …', 'je + глагол в конце; desto + глагол после группы', 'Je früher wir buchen, desto günstiger sind die Tickets.'],
+        ['zwar … aber …', 'Два главных предложения', 'Zwar ist es teuer, aber die Qualität stimmt.'],
+        ['sofern', 'Придаточное; глагол в конце', 'Sofern Sie Fragen haben, rufen Sie uns an.'],
+        ['falls', 'Условное придаточное; глагол в конце', 'Falls der Zug ausfällt, nehmen wir den Bus.'],
+        ['deshalb (сравнение)', 'Причина → следствие', 'Der Zug fällt aus, deshalb nehmen wir den Bus.'],
+      ],
+    }],
     examples: ['Je früher wir buchen, desto günstiger sind die Tickets.', 'Sofern Sie Fragen haben, melden Sie sich bitte.'],
     tip: 'Для je…desto расположите оба изменения параллельно; после desto спрягаемый глагол занимает второе место.',
     distractors: ['je', 'desto', 'umso', 'zwar', 'aber', 'sofern', 'falls', 'während', 'hingegen', 'sowohl', 'als auch', 'je länger', 'desto besser', 'umso schneller', 'günstiger', 'teurer', 'weniger', 'mehr', 'früher', 'später', 'wird', 'werden', 'ist', 'sind', 'kann', 'muss', 'buchen', 'bezahlen'],
@@ -633,7 +771,19 @@ const drafts: TopicDraft[] = [
     title: 'Глаголы с предлогами и da-/wo-',
     summary: 'Учим управление глаголов и заменяем предметы словами darauf, daran и другими.',
     explanation:
-      'Некоторые глаголы требуют определённого предлога: warten auf, sich interessieren für, sprechen über. Если речь о предмете или ситуации, используйте da(r) + предлог: darauf, darüber; в вопросе — wo(r) + предлог: Worauf wartest du? Для людей сохраняйте предлог и личное местоимение: Auf wen wartest du?',
+      'Многие глаголы требуют устойчивого предлога, который нужно учить вместе с глаголом и падежом: warten auf + Akkusativ, sprechen mit + Dativ. Предлог сохраняется и в вопросе, и при замене дополнения.\n\nЕсли речь о вещи или ситуации, используйте da(r) + предлог: darauf, daran, damit. Буква r появляется перед гласной: auf etwas → darauf, an etwas → daran. В вопросе используется wo(r) + предлог: Worauf wartest du? Если речь о человеке, da-/wo- не подходят: Auf wen wartest du? Mit wem sprichst du? Предлоги с sich запоминайте вместе с возвратным местоимением и также согласуйте по лицу.',
+    grammarTables: [{
+      caption: 'Глагол, предлог и замена дополнения',
+      headers: ['Глагол и управление', 'Вопрос о вещи', 'Замена вещи', 'Вопрос о человеке'],
+      rows: [
+        ['warten auf + Akk.', 'Worauf wartest du?', 'Ich warte darauf.', 'Auf wen wartest du?'],
+        ['denken an + Akk.', 'Woran denkst du?', 'Ich denke daran.', 'An wen denkst du?'],
+        ['sprechen über + Akk.', 'Worüber sprecht ihr?', 'Wir sprechen darüber.', 'Über wen sprecht ihr?'],
+        ['sich freuen auf + Akk.', 'Worauf freust du dich?', 'Ich freue mich darauf.', 'Auf wen freust du dich?'],
+        ['sich interessieren für + Akk.', 'Wofür interessiert sie sich?', 'Sie interessiert sich dafür.', 'Für wen interessiert sie sich?'],
+        ['arbeiten mit + Dat.', 'Womit arbeitest du?', 'Ich arbeite damit.', 'Mit wem arbeitest du?'],
+      ],
+    }],
     examples: ['Ich freue mich auf den Urlaub.', 'Worüber sprecht ihr gerade?'],
     tip: 'Карточка для запоминания: глагол + его предлог + падеж. Для вещей: da(r)+предлог, для людей: предлог + wen/wem.',
     distractors: ['auf', 'an', 'mit', 'über', 'für', 'von', 'bei', 'nach', 'darauf', 'daran', 'damit', 'darüber', 'dafür', 'davon', 'dabei', 'worauf', 'woran', 'womit', 'worüber', 'wofür', 'warte', 'wartest', 'freue', 'interessiere', 'denkst', 'sprichst', 'mich', 'dich'],
@@ -661,7 +811,18 @@ const drafts: TopicDraft[] = [
     title: 'Косвенные вопросы',
     summary: 'Вежливо уточняем информацию в разговоре и письме.',
     explanation:
-      'Косвенный вопрос часто начинается с Können Sie mir sagen …? или Ich weiß nicht … . В придаточной части спрягаемый глагол ставится в конец: Können Sie mir sagen, wann der Zug fährt? Вопрос без вопросительного слова вводится через ob.',
+      'Косвенный вопрос встраивает вопрос внутрь другого предложения и звучит мягче прямого. Вопросительное слово (wann, wo, warum, wie, wer) сохраняется, но спрягаемый глагол уходит в конец придаточной части: Können Sie mir sagen, wann der Zug fährt?\n\nЕсли в прямом вопросе нет вопросительного слова и ответ предполагает ja/nein, используйте ob: Ist der Platz frei? → Ich möchte wissen, ob der Platz frei ist. В главной части глагол остаётся на втором месте в утверждении или на первом в общем вопросе. Знак вопроса определяется всей фразой: прямое вежливое обращение — вопрос, сообщение Ich weiß nicht … — точка.',
+    grammarTables: [{
+      caption: 'Преобразование прямого вопроса',
+      headers: ['Прямой вопрос', 'Вводное слово', 'Косвенный вопрос'],
+      rows: [
+        ['Wann fährt der Zug ab?', 'Ich weiß nicht, wann …', 'Ich weiß nicht, wann der Zug abfährt.'],
+        ['Wo ist die Apotheke?', 'Können Sie mir sagen, wo …?', 'Können Sie mir sagen, wo die Apotheke ist?'],
+        ['Ist der Platz frei?', 'Ich möchte wissen, ob …', 'Ich möchte wissen, ob der Platz frei ist.'],
+        ['Wer hat angerufen?', 'Weißt du, wer …?', 'Weißt du, wer angerufen hat?'],
+        ['Wie viel kostet das?', 'Er fragt, wie viel …', 'Er fragt, wie viel das kostet.'],
+      ],
+    }],
     examples: ['Wissen Sie, wo die nächste Haltestelle ist?', 'Ich möchte wissen, ob noch Plätze frei sind.'],
     tip: 'После вопросительного слова или ob поставьте глагол в конец. Знак вопроса остаётся, если всё предложение — вопрос.',
     distractors: ['ob', 'wann', 'wo', 'wie', 'warum', 'wer', 'was', 'welche', 'welcher', 'wieviel', 'ist', 'sind', 'hat', 'haben', 'fährt', 'kommt', 'öffnet', 'beginnt', 'ich', 'Sie', 'man', 'der Zug', 'die Praxis', 'das Büro', 'heute', 'morgen', 'noch', 'schon'],
@@ -689,7 +850,19 @@ const drafts: TopicDraft[] = [
     title: 'Придаточные времени: als, wenn, bevor',
     summary: 'Точно обозначаем, когда происходят события.',
     explanation:
-      'Однократное событие в прошлом обычно вводится als: Als ich ankam, war das Büro schon geschlossen. Повторение и настоящее/будущее — wenn. Bevor означает «до того как», nachdem — «после того как», während — «пока/в то время как». В придаточной части глагол стоит в конце.',
+      'Придаточное времени отвечает на вопрос «когда?» и начинается с союза. В придаточной части спрягаемый глагол ставится в конец; если придаточное стоит первым, после запятой глагол главной части идёт сразу: Wenn ich Zeit habe, rufe ich dich an.\n\nAls употребляется для отдельного события или периода в прошлом; wenn — для повторяющихся событий в прошлом, а также настоящего и будущего. Bevor указывает, что действие главной части происходит раньше события в придаточном; nachdem — что позже. В nachdem-придаточном о прошлом часто используют Plusquamperfekt, чтобы явно показать предшествование. Während обозначает одновременность, bis — конечную границу, sobald — момент сразу после события.',
+    grammarTables: [{
+      caption: 'Выбор союза и временная связь',
+      headers: ['Союз', 'Значение / употребление', 'Пример'],
+      rows: [
+        ['als', 'Одно событие или период в прошлом', 'Als ich ankam, war das Büro schon zu.'],
+        ['wenn', 'Повторение в прошлом; настоящее или будущее', 'Wenn ich Feierabend habe, rufe ich an.'],
+        ['bevor', 'Главное действие происходит раньше', 'Bevor wir losfahren, tanken wir.'],
+        ['nachdem', 'Главное действие происходит позже', 'Nachdem sie gegessen hatte, ging sie los.'],
+        ['während', 'Действия происходят одновременно', 'Während ich koche, deckt er den Tisch.'],
+        ['bis / sobald', 'До границы / сразу после события', 'Warte, bis der Bus kommt.'],
+      ],
+    }],
     examples: ['Wenn ich Feierabend habe, rufe ich dich an.', 'Bevor wir losfahren, tanken wir das Auto.'],
     tip: 'Вспомните: als — один раз в прошлом; wenn — повторение или настоящее/будущее. После придаточной части в начале предложения сразу идёт спрягаемый глагол главной части.',
     distractors: ['als', 'wenn', 'bevor', 'nachdem', 'während', 'sobald', 'solange', 'bis', 'seitdem', 'ankam', 'ankomme', 'ankommen', 'geöffnet war', 'geschlossen hatte', 'losfahren', 'anrufen', 'bezahlen', 'einkaufen', 'ich', 'wir', 'sie', 'er', 'der Zug', 'die Arbeit', 'heute', 'gestern', 'morgen', 'danach'],
@@ -717,7 +890,18 @@ const drafts: TopicDraft[] = [
     title: 'Genitiv: принадлежность и предлоги',
     summary: 'Выражаем принадлежность и используем устойчивые предлоги с родительным падежом.',
     explanation:
-      'Genitiv отвечает на вопрос wessen? и часто выражает принадлежность: das Auto meines Nachbarn. После wegen, trotz, während, außerhalb и innerhalb в стандартной письменной речи обычно употребляется Genitiv. У существительных мужского и среднего рода часто появляется -s или -es.',
+      'Genitiv отвечает на вопрос wessen? («чей?») и обозначает принадлежность: das Auto meines Nachbarn. Артикль и местоимение получают падежную форму, а существительные мужского и среднего рода в единственном числе обычно добавляют -s или -es: des Tages, des Kindes. Женские существительные и множественное число обычно не получают окончания Genitiv.\n\nПредлоги wegen, trotz, während, innerhalb и außerhalb в стандартном письменном немецком управляют Genitiv. Определение согласуется с артиклем: wegen des starken Regens, trotz einer langen Wartezeit. В разговорной речи можно услышать другие варианты управления, но в учебном и формальном контексте ориентируйтесь на Genitiv. Не путайте притяжательный Genitiv без предлога с Dativ после mit: das Auto meines Nachbarn, aber mit meinem Nachbarn.',
+    grammarTables: [{
+      caption: 'Артикли и окончания существительных в Genitiv',
+      headers: ['Род / число', 'Определённый артикль', 'Неопределённый / притяжательный', 'Окончание существительного'],
+      rows: [
+        ['Мужской род', 'des Mannes', 'eines / meines Mannes', '-s или -es'],
+        ['Средний род', 'des Kindes', 'eines / meines Kindes', '-s или -es'],
+        ['Женский род', 'der Frau', 'einer / meiner Frau', 'обычно без окончания'],
+        ['Множественное число', 'der Kinder', 'meiner Kinder', 'обычно без окончания'],
+        ['Прилагательное', 'wegen des starken Regens', 'trotz einer langen Reise', 'окончание зависит от артикля'],
+      ],
+    }],
     examples: ['Wegen des starken Regens blieb die Straße gesperrt.', 'Das Fahrrad meiner Schwester steht im Keller.'],
     tip: 'В связке «из-за / несмотря на / во время чего» проверьте Genitiv: wegen des Regens, trotz der Verspätung, während des Gesprächs.',
     distractors: ['des', 'der', 'eines', 'einer', 'meines', 'meiner', 'seines', 'ihrer', 'starken', 'starker', 'starkes', 'schlechten', 'schlechter', 'neuen', 'alten', 'Regen', 'Regens', 'Wetter', 'Wetters', 'Verspätung', 'Besprechung', 'wegen', 'trotz', 'während', 'innerhalb', 'außerhalb', 'wegen des', 'trotz der'],
@@ -745,7 +929,17 @@ const drafts: TopicDraft[] = [
     title: 'Причастные определения',
     summary: 'Сжимаем придаточные определения в точные письменные конструкции.',
     explanation:
-      'Partizip I описывает действие, которое происходит одновременно: die wartenden Fahrgäste («пассажиры, которые ждут»). Partizip II чаще выражает завершённое или пассивное действие: die gestern reparierte Heizung («отопление, которое вчера отремонтировали»). Перед существительным причастие получает окончание прилагательного.',
+      'Расширенное причастное определение ставится перед существительным и заменяет относительное придаточное. Partizip I образуется от инфинитива + -d (warten → wartend) и обычно означает, что носитель признака сам выполняет действие одновременно: die wartenden Fahrgäste = Fahrgäste, die warten.\n\nPartizip II чаще выражает завершённость или пассивное значение: die reparierte Heizung = Heizung, die repariert wurde. Перед причастием могут стоять дополнения и обстоятельства; вся группа пишется слитно по смыслу, но не как одно слово: die gestern von einem Techniker reparierte Heizung. Само причастие ведёт себя как прилагательное и получает окончание по роду, числу, падежу и типу артикля. Длинные определения свойственны письменному стилю; при сомнении разверните их в Relativsatz и сравните смысл.',
+    grammarTables: [{
+      caption: 'Partizip I и Partizip II в определении',
+      headers: ['Форма', 'Образование', 'Типичный смысл', 'Развёрнутое придаточное'],
+      rows: [
+        ['Partizip I', 'Infinitiv + d', 'Активное / одновременное действие', 'die wartenden Gäste → Gäste, die warten'],
+        ['Partizip II: переходный глагол', 'Partizip II', 'Завершённое или пассивное действие', 'die reparierte Heizung → Heizung, die repariert wurde'],
+        ['Partizip II: состояние', 'Partizip II', 'Результат действия', 'das geschlossene Fenster → Fenster, das geschlossen ist'],
+        ['Окончание', 'как у прилагательного', 'Согласуется с существительным', 'mit den wartenden Fahrgästen'],
+      ],
+    }],
     examples: ['Die gerade renovierte Wohnung ist wieder bewohnbar.', 'Die auf den Bus wartenden Fahrgäste stehen draußen.'],
     tip: 'Попробуйте развернуть определение в придаточное с der/die/das. Если смысл совпал, вы правильно прочитали причастие; затем проверьте окончание перед существительным.',
     distractors: ['wartende', 'wartenden', 'wartender', 'wartendes', 'reisende', 'reisenden', 'reisender', 'reisendes', 'geschlossene', 'geschlossenen', 'renovierte', 'renovierten', 'geöffnete', 'geöffneten', 'reparierte', 'reparierten', 'die', 'der', 'das', 'den', 'fahrenden', 'abgeschickte', 'gekündigte', 'gesuchte', 'gerade', 'gestern', 'neu', 'bereits'],

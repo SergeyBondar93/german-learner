@@ -71,6 +71,19 @@ export function validateContent(topics: Topic[]): void {
     assert(topic.explanation.trim().length > 0, `${topic.id}: explanation must not be empty.`);
     assert(topic.examples.length > 0, `${topic.id}: at least one example is required.`);
     assert(topic.tip.trim().length > 0, `${topic.id}: a memory tip is required.`);
+    if (topic.level === 'B1' || topic.level === 'B2') {
+      assert(topic.explanation.length >= 350, `${topic.id}: B1–B2 explanation must be detailed.`);
+      assert((topic.grammarTables?.length ?? 0) > 0, `${topic.id}: a grammar reference table is required.`);
+    }
+    for (const table of topic.grammarTables ?? []) {
+      assert(table.caption.trim().length > 0, `${topic.id}: grammar table caption must not be empty.`);
+      assert(table.headers.length >= 2, `${topic.id}: grammar table must have at least two columns.`);
+      assert(table.rows.length > 0, `${topic.id}: grammar table must have at least one row.`);
+      table.rows.forEach((row, index) => {
+        assert(row.length === table.headers.length, `${topic.id}: grammar table row ${index + 1} has an invalid shape.`);
+        assert(row.every((cell) => cell.trim().length > 0), `${topic.id}: grammar table cells must not be empty.`);
+      });
+    }
     assert(topic.exercises.length === 15, `${topic.id}: expected 15 exercises, received ${topic.exercises.length}.`);
     if (topic.reference) {
       assert(/^https:\/\/.+/.test(topic.reference.url), `${topic.id}: reference must use HTTPS.`);

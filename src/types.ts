@@ -7,12 +7,19 @@ export type Exercise = {
   options: string[];
 };
 
+export type GrammarTable = {
+  caption: string;
+  headers: string[];
+  rows: string[][];
+};
+
 export type Topic = {
   id: string;
   level: Level;
   title: string;
   summary: string;
   explanation: string;
+  grammarTables?: GrammarTable[];
   examples: string[];
   tip: string;
   reference?: {

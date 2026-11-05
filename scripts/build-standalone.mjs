@@ -37,8 +37,18 @@ const content = loadTypeScriptModule(
   path.join(root, 'src', 'content.ts'),
   { './trainer': trainer },
 );
+const b1AdditionalExercises = loadTypeScriptModule(
+  path.join(root, 'src', 'b1AdditionalExercises.ts'),
+);
+const b2AdditionalExercises = loadTypeScriptModule(
+  path.join(root, 'src', 'b2AdditionalExercises.ts'),
+);
 const authoredPools = loadTypeScriptModule(
   path.join(root, 'src', 'authoredExercisePools.ts'),
+  {
+    './b1AdditionalExercises': b1AdditionalExercises,
+    './b2AdditionalExercises': b2AdditionalExercises,
+  },
 );
 const pronouns = loadTypeScriptModule(
   path.join(root, 'src', 'pronounExercises.ts'),
@@ -78,7 +88,7 @@ for (const topic of content.TOPICS) {
   }
 }
 
-const EXERCISE_POOL_SIZE = 50;
+const EXERCISE_POOL_SIZE_BY_LEVEL = { A2: 50, B1: 100, B2: 100 };
 const SESSION_EXERCISE_COUNT = 15;
 const FRONTED_CONTEXTS = [
   { ru: 'Сегодня', de: 'Heute', temporal: true },
@@ -292,9 +302,10 @@ function shuffle(items) {
 
 function buildExercisePool(topic) {
   const additions = authoredPools.AUTHORED_EXERCISE_POOLS[topic.id];
-  if (!additions || additions.length !== EXERCISE_POOL_SIZE - topic.exercises.length) {
+  const expectedPoolSize = EXERCISE_POOL_SIZE_BY_LEVEL[topic.level];
+  if (!additions || additions.length !== expectedPoolSize - topic.exercises.length) {
     throw new Error(
-      `${topic.id}: expected ${EXERCISE_POOL_SIZE - topic.exercises.length} authored additions.`,
+      `${topic.id}: expected ${expectedPoolSize - topic.exercises.length} authored additions.`,
     );
   }
   const distractorBank = topic.exercises.flatMap((exercise) => exercise.options);
@@ -320,8 +331,8 @@ function buildExercisePool(topic) {
     exercises: pool,
   };
   const exerciseIds = new Set(result.exercises.map((exercise) => exercise.id));
-  if (exerciseIds.size !== EXERCISE_POOL_SIZE) {
-    throw new Error(`${topic.id}: exercise ids must be unique.`);
+  if (exerciseIds.size !== expectedPoolSize) {
+    throw new Error(`${topic.id}: expected ${expectedPoolSize} unique exercise ids.`);
   }
   for (const exercise of result.exercises) {
     const wordCount = trainer.tokenize(exercise.answer).length;
@@ -337,7 +348,7 @@ function buildExercisePool(topic) {
     }
   }
   const promptSet = new Set(result.exercises.map(({ prompt }) => prompt));
-  if (promptSet.size !== EXERCISE_POOL_SIZE) {
+  if (promptSet.size !== expectedPoolSize) {
     throw new Error(`${topic.id}: Russian prompts must be unique.`);
   }
   return result;
@@ -421,9 +432,19 @@ const output = `<!doctype html>
     .back { min-height: 44px; margin: 8px 0 6px -10px; padding: 0 10px; border: 0; background: transparent; color: var(--accent); font-weight: 750; cursor: pointer; }
     .lesson-heading { padding: 4px 0 16px; }
     .lesson-heading h1 { font-size: clamp(25px, 6vw, 30px); }
+    .lesson-heading .body-copy { white-space: pre-line; }
     .info-card { padding: 16px; }
     .label { color: var(--muted); margin-bottom: 9px; }
     .example { margin: 0 0 6px; font-size: 15px; line-height: 1.55; overflow-wrap: anywhere; }
+    .grammar-tables { display: grid; gap: 14px; margin-top: 18px; }
+    .grammar-table-scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); -webkit-overflow-scrolling: touch; }
+    .grammar-table { width: 100%; min-width: 560px; table-layout: fixed; border-collapse: collapse; font-size: 13px; line-height: 1.45; }
+    .grammar-table caption { padding: 10px 12px; color: var(--ink); font-size: 13px; font-weight: 750; text-align: left; }
+    .grammar-table th, .grammar-table td { min-width: 100px; padding: 9px 11px; border-top: 1px solid var(--border); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+    .grammar-table th:first-child, .grammar-table td:first-child { width: 30vw; min-width: 0; max-width: 30vw; }
+    .grammar-table th { background: #f5f7fb; font-weight: 750; }
+    .grammar-table th:first-child, .grammar-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 var(--border); }
+    .grammar-table th:first-child { z-index: 2; background: #f5f7fb; }
     .tip { margin-top: 13px; padding: 12px; border-radius: 12px; background: var(--accent-light); }
     .tip strong { display: block; margin-bottom: 4px; color: var(--accent); font-size: 12px; }
     .tip p { margin: 0; font-size: 13px; line-height: 1.5; }
@@ -649,7 +670,7 @@ const output = `<!doctype html>
       const sectionTitle = pronounsSelected ? 'Местоимения' : 'Уровень ' + state.level;
       const sectionSummary = pronounsSelected
         ? '500 упражнений · до 15 за раунд · 150 для ед. числа и 350 для мн. числа'
-        : topics.length + ' тем · 50 упражнений в банке · до 15 за раунд';
+        : topics.length + ' тем · ' + (state.level === 'A2' ? '50' : '100') + ' упражнений в теме · до 15 за раунд';
       app.innerHTML = renderHeader()
         + '<section class="intro"><p class="eyebrow">ТВОЯ ПРАКТИКА</p><h1>Выбери тему</h1><p class="body-copy">Разбирай грамматику на русском и сразу закрепляй её в предложениях из жизни.</p></section>'
         + '<nav class="level-tabs" aria-label="Уровень немецкого">'
@@ -662,6 +683,13 @@ const output = `<!doctype html>
     function renderLesson(topic, index) {
       const exercise = topic.exercises[index];
       const examples = topic.examples.map((example) => '<p class="example">' + escapeHtml(example) + '</p>').join('');
+      const grammarTables = (topic.grammarTables || []).map((table) =>
+        '<div class="grammar-table-scroll" role="region" aria-label="' + escapeHtml(table.caption) + '" tabindex="0"><table class="grammar-table"><caption>' + escapeHtml(table.caption) + '</caption><thead><tr>'
+        + table.headers.map((header) => '<th scope="col">' + escapeHtml(header) + '</th>').join('')
+        + '</tr></thead><tbody>'
+        + table.rows.map((row) => '<tr>' + row.map((cell) => '<td>' + escapeHtml(cell) + '</td>').join('') + '</tr>').join('')
+        + '</tbody></table></div>',
+      ).join('');
       const reference = topic.reference
         ? '<a class="reference" href="' + escapeHtml(topic.reference.url) + '" target="_blank" rel="noopener noreferrer">Полезно на английском: ' + escapeHtml(topic.reference.label) + '</a>'
         : '';
@@ -689,7 +717,7 @@ const output = `<!doctype html>
       app.innerHTML = renderHeader()
         + '<button class="back" type="button" data-action="home">‹  Все темы</button>'
         + '<section class="lesson-heading"><p class="eyebrow">' + escapeHtml(topic.level) + ' · ГРАММАТИКА</p><h1>' + escapeHtml(topic.title) + '</h1><p class="body-copy">' + escapeHtml(topic.explanation) + '</p></section>'
-        + '<section class="info-card"><p class="label">ПРИМЕРЫ</p>' + examples
+        + '<section class="info-card"><p class="label">ПРИМЕРЫ</p>' + examples + grammarTables
         + '<div class="tip"><strong>Лайфхак</strong><p>' + escapeHtml(topic.tip) + '</p></div>' + reference + '</section>'
         + '<section class="trainer-heading"><div><p class="label">ТРЕНАЖЁР</p><h2>Собери предложение</h2></div><span class="progress-text">' + (index + 1) + ' / ' + topic.exercises.length + '</span></section>'
         + '<div class="progress-track" role="progressbar" aria-label="Прогресс темы" aria-valuemin="1" aria-valuemax="' + topic.exercises.length + '" aria-valuenow="' + (index + 1) + '"><div class="progress-fill" style="width:' + ((index + 1) / topic.exercises.length * 100) + '%"></div></div>'
@@ -810,4 +838,4 @@ const output = `<!doctype html>
 
 const outputPath = path.join(root, 'index.html');
 writeFileSync(outputPath, output, 'utf8');
-console.log(`Created ${path.relative(root, outputPath)} with ${exerciseTopics.length} topics at 50 exercises each, 500 pronoun exercises, and up to ${SESSION_EXERCISE_COUNT} uncompleted exercises per visit.`);
+console.log(`Created ${path.relative(root, outputPath)} with 8 A2 topics at 50 exercises, 17 B1/B2 topics at 100 exercises, 500 pronoun exercises, and up to ${SESSION_EXERCISE_COUNT} uncompleted exercises per visit.`);

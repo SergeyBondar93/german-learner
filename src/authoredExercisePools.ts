@@ -1,6 +1,9 @@
+import { B1_ADDITIONAL_EXERCISES } from './b1AdditionalExercises';
+import { B2_ADDITIONAL_EXERCISES } from './b2AdditionalExercises';
+
 export type AuthoredSentence = readonly [prompt: string, answer: string];
 
-export const AUTHORED_EXERCISE_POOLS: Record<string, AuthoredSentence[]> = {
+const BASE_AUTHORED_EXERCISE_POOLS: Record<string, AuthoredSentence[]> = {
   'a2-perfekt': [
     ['Я забыл кошелёк дома.', 'Ich habe meine Geldbörse zu Hause vergessen.'],
     ['Мы заказали столик на семь.', 'Wir haben einen Tisch für sieben Uhr reserviert.'],
@@ -927,3 +930,15 @@ export const AUTHORED_EXERCISE_POOLS: Record<string, AuthoredSentence[]> = {
     ['Найденные в архиве документы отправили в отдел.', 'Die im Archiv gefundenen Unterlagen wurden an die Abteilung geschickt.'],
   ],
 };
+
+export const AUTHORED_EXERCISE_POOLS: Record<string, AuthoredSentence[]> =
+  Object.fromEntries(
+    Object.entries(BASE_AUTHORED_EXERCISE_POOLS).map(([topicId, exercises]) => [
+      topicId,
+      [
+        ...exercises,
+        ...(B1_ADDITIONAL_EXERCISES[topicId] ?? []),
+        ...(B2_ADDITIONAL_EXERCISES[topicId] ?? []),
+      ],
+    ]),
+  );

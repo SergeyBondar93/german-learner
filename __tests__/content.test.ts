@@ -17,16 +17,17 @@ describe('learning content', () => {
 
     for (const topic of TOPICS) {
       const additions = AUTHORED_EXERCISE_POOLS[topic.id];
-      expect(additions).toHaveLength(35);
+      const expectedPoolSize = topic.level === 'A2' ? 50 : 100;
+      expect(additions).toHaveLength(expectedPoolSize - topic.exercises.length);
       const exercises = [
         ...topic.exercises.map(({ prompt, answer }) => [prompt, answer] as const),
         ...additions,
       ];
-      expect(exercises).toHaveLength(50);
-      expect(new Set(exercises.map(([prompt]) => prompt)).size).toBe(50);
+      expect(exercises).toHaveLength(expectedPoolSize);
+      expect(new Set(exercises.map(([prompt]) => prompt)).size).toBe(expectedPoolSize);
       expect(
         new Set(exercises.map(([prompt, answer]) => `${prompt}\u0000${answer}`)).size,
-      ).toBe(50);
+      ).toBe(expectedPoolSize);
 
       for (const [prompt, answer] of exercises) {
         expect(prompt).toMatch(/[\u0400-\u04FF]/);
@@ -61,6 +62,13 @@ describe('learning content', () => {
 
   it('satisfies all lesson and word-bank requirements', () => {
     expect(() => validateContent(TOPICS)).not.toThrow();
+  });
+
+  it('provides detailed, tabulated grammar explanations for every B1 and B2 topic', () => {
+    for (const topic of TOPICS.filter(({ level }) => level === 'B1' || level === 'B2')) {
+      expect(topic.explanation.length).toBeGreaterThanOrEqual(350);
+      expect(topic.grammarTables?.length).toBeGreaterThan(0);
+    }
   });
 
   it('contains exactly 500 pronoun exercises with the requested singular/plural split', () => {
