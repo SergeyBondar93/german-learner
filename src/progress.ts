@@ -31,6 +31,11 @@ export function createProgressStore(storage: ProgressStorage) {
     getCompletedCount(topicId: string): number {
       return new Set(read()[topicId] || []).size;
     },
+    getExercisesForNextRound<T extends { id: string }>(topicId: string, exercises: T[]): T[] {
+      const completed = new Set(read()[topicId] || []);
+      const uncompleted = exercises.filter((exercise) => !completed.has(exercise.id));
+      return uncompleted.length ? uncompleted : exercises;
+    },
     markCompleted(topicId: string, exerciseId: string): void {
       const progress = read();
       const completed = new Set(progress[topicId] || []);

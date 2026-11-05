@@ -304,7 +304,7 @@ function buildExercisePool(topic) {
       id: `${topic.id}-authored-${index + 1}`,
       prompt,
       answer,
-      options: trainer.createOptions(answer, distractorBank),
+      options: trainer.createOptions(answer, distractorBank, index),
     })),
   ];
   const knownSentences = new Set();
@@ -615,8 +615,9 @@ const output = `<!doctype html>
       }
       return shuffled;
     };
-    const pickExerciseSet = (exercises) => {
-      const shuffled = [...exercises];
+    const pickExerciseSet = (topicId, exercises) => {
+      const availableExercises = progressStore.getExercisesForNextRound(topicId, exercises);
+      const shuffled = [...availableExercises];
       for (let index = shuffled.length - 1; index > 0; index -= 1) {
         const swapIndex = Math.floor(Math.random() * (index + 1));
         [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
@@ -636,7 +637,7 @@ const output = `<!doctype html>
       const topicPool = TOPICS.find((item) => item.id === parts[1]);
       if (!topicPool) return null;
       const exercises = state.exerciseSets[topicPool.id]
-        || (state.exerciseSets[topicPool.id] = pickExerciseSet(topicPool.exercises));
+        || (state.exerciseSets[topicPool.id] = pickExerciseSet(topicPool.id, topicPool.exercises));
       const topic = { ...topicPool, exercises };
       const index = Number.parseInt(parts[2] || '0', 10);
       return { topic, index: Number.isFinite(index) ? Math.max(0, Math.min(index, topic.exercises.length - 1)) : 0 };
@@ -647,8 +648,8 @@ const output = `<!doctype html>
       const pronounsSelected = state.level === 'Местоимения';
       const sectionTitle = pronounsSelected ? 'Местоимения' : 'Уровень ' + state.level;
       const sectionSummary = pronounsSelected
-        ? '500 упражнений · 15 случайно за раунд · 150 для ед. числа и 350 для мн. числа'
-        : topics.length + ' тем · 50 упражнений в банке · 15 случайно за раунд';
+        ? '500 упражнений · до 15 за раунд · 150 для ед. числа и 350 для мн. числа'
+        : topics.length + ' тем · 50 упражнений в банке · до 15 за раунд';
       app.innerHTML = renderHeader()
         + '<section class="intro"><p class="eyebrow">ТВОЯ ПРАКТИКА</p><h1>Выбери тему</h1><p class="body-copy">Разбирай грамматику на русском и сразу закрепляй её в предложениях из жизни.</p></section>'
         + '<nav class="level-tabs" aria-label="Уровень немецкого">'
@@ -735,7 +736,7 @@ const output = `<!doctype html>
           const topic = TOPICS.find((item) => item.id === button.dataset.topic);
           if (topic) {
             stopSpeechRecognition();
-            state.exerciseSets[topic.id] = pickExerciseSet(topic.exercises);
+            state.exerciseSets[topic.id] = pickExerciseSet(topic.id, topic.exercises);
             goToExercise(topic.id, 0);
             window.scrollTo(0, 0);
           }
@@ -809,4 +810,4 @@ const output = `<!doctype html>
 
 const outputPath = path.join(root, 'index.html');
 writeFileSync(outputPath, output, 'utf8');
-console.log(`Created ${path.relative(root, outputPath)} with ${exerciseTopics.length} topics at 50 exercises each, 500 pronoun exercises, and ${SESSION_EXERCISE_COUNT} randomly selected per visit.`);
+console.log(`Created ${path.relative(root, outputPath)} with ${exerciseTopics.length} topics at 50 exercises each, 500 pronoun exercises, and up to ${SESSION_EXERCISE_COUNT} uncompleted exercises per visit.`);

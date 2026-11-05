@@ -25,6 +25,19 @@ describe('progress store', () => {
     expect(createProgressStore(storage).getCompletedCount('a2-perfekt')).toBe(2);
   });
 
+  it('only offers uncompleted exercises until the topic is fully completed', () => {
+    const progress = createProgressStore(createMemoryStorage());
+    const exercises = [{ id: 'one' }, { id: 'two' }, { id: 'three' }];
+    progress.markCompleted('a2-perfekt', 'two');
+
+    expect(progress.getExercisesForNextRound('a2-perfekt', exercises))
+      .toEqual([{ id: 'one' }, { id: 'three' }]);
+
+    progress.markCompleted('a2-perfekt', 'one');
+    progress.markCompleted('a2-perfekt', 'three');
+    expect(progress.getExercisesForNextRound('a2-perfekt', exercises)).toBe(exercises);
+  });
+
   it('clears only stored exercise progress', () => {
     const storage = createMemoryStorage();
     storage.setItem('another-app-setting', 'keep');

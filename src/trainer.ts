@@ -190,6 +190,7 @@ export function distractorCount(answerWordCount: number): number {
 export function createOptions(
   answer: string,
   distractors: string[],
+  distractorOffset = 0,
 ): string[] {
   const answerWords = tokenize(answer);
   const requiredDistractorCount = distractorCount(answerWords.length);
@@ -197,8 +198,18 @@ export function createOptions(
   const articleAlternatives = answerWords
     .map((word) => ARTICLE_ALTERNATIVES[normalizeWord(word)])
     .filter((word): word is string => Boolean(word));
+  const topicalDistractors = Array.from(new Set(distractors))
+    .filter((word) => !correctWords.has(normalizeWord(word)));
+  const offset = topicalDistractors.length
+    ? ((Math.trunc(distractorOffset) % topicalDistractors.length) + topicalDistractors.length)
+      % topicalDistractors.length
+    : 0;
+  const rotatedDistractors = [
+    ...topicalDistractors.slice(offset),
+    ...topicalDistractors.slice(0, offset),
+  ];
   const uniqueDistractors = Array.from(
-    new Set([...articleAlternatives, ...distractors]),
+    new Set([...articleAlternatives, ...rotatedDistractors]),
   ).filter((word) => !correctWords.has(normalizeWord(word)));
 
   if (uniqueDistractors.length < requiredDistractorCount) {

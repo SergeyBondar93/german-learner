@@ -95,6 +95,17 @@ describe('trainer helpers', () => {
     expect(() => createOptions('Ich rufe dich an.', ['Ich', 'heute', 'morgen'])).not.toThrow();
   });
 
+  it('rotates topical distractors across authored exercises', () => {
+    const answer = 'Ich kaufe heute Brot.';
+    const distractors = ['morgen', 'gestern', 'Milch', 'Käse'];
+    const firstOptions = createOptions(answer, distractors, 0);
+    const nextOptions = createOptions(answer, distractors, 1);
+
+    expect(firstOptions.slice(4)).toEqual(['morgen', 'gestern']);
+    expect(nextOptions.slice(4)).toEqual(['gestern', 'Milch']);
+    expect(nextOptions.slice(0, 4)).toEqual(tokenize(answer));
+  });
+
   it('normalizes punctuation around a word', () => {
     expect(normalizeWord('„Hallo!“')).toBe('hallo');
   });
