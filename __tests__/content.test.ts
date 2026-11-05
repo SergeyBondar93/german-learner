@@ -10,7 +10,7 @@ import { distractorCount, tokenize } from '../src/trainer';
 import { describe, expect, it } from '@jest/globals';
 
 describe('learning content', () => {
-  it('has 50 unique, correctly sized hand-authored exercises for every topic', () => {
+  it('has unique, correctly sized hand-authored exercises for every topic', () => {
     expect(Object.keys(AUTHORED_EXERCISE_POOLS).sort()).toEqual(
       TOPICS.map(({ id }) => id).sort(),
     );
@@ -40,7 +40,7 @@ describe('learning content', () => {
   });
 
   it('contains the expected topic and exercise counts at each level', () => {
-    const expectedCounts = { A2: 8, B1: 9, B2: 8 };
+    const expectedCounts = { A2: 8, B1: 11, B2: 9 };
     for (const level of LEVELS) {
       expect(getTopicsByLevel(level)).toHaveLength(expectedCounts[level]);
       expect(getTopicsByLevel(level).reduce((total, topic) => total + topic.exercises.length, 0))
@@ -55,8 +55,11 @@ describe('learning content', () => {
       'b1-verben-mit-praepositionen',
       'b1-indirekte-fragen',
       'b1-temporalsaetze',
+      'b1-satzstellung',
+      'b1-n-deklination',
       'b2-genitiv',
       'b2-partizipialattribute',
+      'b2-satzverbindungen',
     ]));
   });
 

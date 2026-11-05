@@ -4,8 +4,8 @@ import { distractorCount, normalizeWord, tokenize } from './trainer';
 const REQUIRED_LEVELS: Level[] = ['A2', 'B1', 'B2'];
 const EXPECTED_TOPIC_COUNTS: Record<Level, number> = {
   A2: 8,
-  B1: 9,
-  B2: 8,
+  B1: 11,
+  B2: 9,
 };
 
 function assert(condition: boolean, message: string): asserts condition {
@@ -53,7 +53,8 @@ function countWords(words: string[]): Map<string, number> {
 }
 
 export function validateContent(topics: Topic[]): void {
-  assert(topics.length === 25, `Expected 25 topics, received ${topics.length}.`);
+  const expectedTopicCount = Object.values(EXPECTED_TOPIC_COUNTS).reduce((total, count) => total + count, 0);
+  assert(topics.length === expectedTopicCount, `Expected ${expectedTopicCount} topics, received ${topics.length}.`);
   const ids = new Set(topics.map((topic) => topic.id));
   assert(ids.size === topics.length, 'Topic ids must be unique.');
 

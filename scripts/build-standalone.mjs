@@ -40,14 +40,26 @@ const content = loadTypeScriptModule(
 const b1AdditionalExercises = loadTypeScriptModule(
   path.join(root, 'src', 'b1AdditionalExercises.ts'),
 );
+const b1NDeklinationAdditions = loadTypeScriptModule(
+  path.join(root, 'src', 'b1NDeklinationAdditions.ts'),
+);
+const b1SatzstellungAdditions = loadTypeScriptModule(
+  path.join(root, 'src', 'b1SatzstellungAdditions.ts'),
+);
 const b2AdditionalExercises = loadTypeScriptModule(
   path.join(root, 'src', 'b2AdditionalExercises.ts'),
+);
+const b2SatzverbindungenAdditions = loadTypeScriptModule(
+  path.join(root, 'src', 'b2SatzverbindungenAdditions.ts'),
 );
 const authoredPools = loadTypeScriptModule(
   path.join(root, 'src', 'authoredExercisePools.ts'),
   {
     './b1AdditionalExercises': b1AdditionalExercises,
+    './b1NDeklinationAdditions': b1NDeklinationAdditions,
+    './b1SatzstellungAdditions': b1SatzstellungAdditions,
     './b2AdditionalExercises': b2AdditionalExercises,
+    './b2SatzverbindungenAdditions': b2SatzverbindungenAdditions,
   },
 );
 const pronouns = loadTypeScriptModule(
@@ -79,8 +91,8 @@ if (/\bexports\./.test(answerMatchingSource)) {
   throw new Error('Answer-matching functions must not reference CommonJS exports in the standalone page.');
 }
 
-if (content.TOPICS.length !== 25) {
-  throw new Error(`Expected 25 topics, found ${content.TOPICS.length}.`);
+if (content.TOPICS.length !== 28) {
+  throw new Error(`Expected 28 topics, found ${content.TOPICS.length}.`);
 }
 for (const topic of content.TOPICS) {
   if (topic.exercises.length !== 15) {
@@ -838,4 +850,4 @@ const output = `<!doctype html>
 
 const outputPath = path.join(root, 'index.html');
 writeFileSync(outputPath, output, 'utf8');
-console.log(`Created ${path.relative(root, outputPath)} with 8 A2 topics at 50 exercises, 17 B1/B2 topics at 100 exercises, 500 pronoun exercises, and up to ${SESSION_EXERCISE_COUNT} uncompleted exercises per visit.`);
+console.log(`Created ${path.relative(root, outputPath)} with 8 A2 topics at 50 exercises, 20 B1/B2 topics at 100 exercises, 500 pronoun exercises, and up to ${SESSION_EXERCISE_COUNT} uncompleted exercises per visit.`);

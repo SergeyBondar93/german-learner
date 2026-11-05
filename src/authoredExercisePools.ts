@@ -1,5 +1,8 @@
 import { B1_ADDITIONAL_EXERCISES } from './b1AdditionalExercises';
+import { B1_N_DEKLINATION_ADDITIONS } from './b1NDeklinationAdditions';
+import { B1_SATZSTELLUNG_ADDITIONS } from './b1SatzstellungAdditions';
 import { B2_ADDITIONAL_EXERCISES } from './b2AdditionalExercises';
+import { B2_SATZVERBINDUNGEN_ADDITIONS } from './b2SatzverbindungenAdditions';
 
 export type AuthoredSentence = readonly [prompt: string, answer: string];
 
@@ -929,6 +932,9 @@ const BASE_AUTHORED_EXERCISE_POOLS: Record<string, AuthoredSentence[]> = {
     ['Пришедшие раньше гости помогли накрыть на стол.', 'Die früher eingetroffenen Gäste halfen beim Tischdecken.'],
     ['Найденные в архиве документы отправили в отдел.', 'Die im Archiv gefundenen Unterlagen wurden an die Abteilung geschickt.'],
   ],
+  'b1-satzstellung': [],
+  'b1-n-deklination': [],
+  'b2-satzverbindungen': [],
 };
 
 export const AUTHORED_EXERCISE_POOLS: Record<string, AuthoredSentence[]> =
@@ -938,7 +944,10 @@ export const AUTHORED_EXERCISE_POOLS: Record<string, AuthoredSentence[]> =
       [
         ...exercises,
         ...(B1_ADDITIONAL_EXERCISES[topicId] ?? []),
+        ...(topicId === 'b1-n-deklination' ? B1_N_DEKLINATION_ADDITIONS : []),
+        ...(topicId === 'b1-satzstellung' ? B1_SATZSTELLUNG_ADDITIONS : []),
         ...(B2_ADDITIONAL_EXERCISES[topicId] ?? []),
+        ...(topicId === 'b2-satzverbindungen' ? B2_SATZVERBINDUNGEN_ADDITIONS : []),
       ],
     ]),
   );
